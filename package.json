@@ -51,6 +51,8 @@
     "@types/run-sequence": "0.0.29",
     "@types/sinon": "^2.1.2",
     "@types/sinon-as-promised": "^4.0.6",
+    "@types/superagent": "^2.0.36",
+    "@types/uuid": "^2.0.29",
     "babel-core": "^6.24.1",
     "babel-preset-es2016": "^6.24.1",
     "chai": "^3.5.0",
@@ -75,6 +77,8 @@
     "typescript": "^2.2.2"
   },
   "dependencies": {
-    "rdflib-ts": "^1.0.2"
+    "rdflib-ts": "^1.0.2",
+    "superagent": "^3.5.2",
+    "uuid": "^3.0.1"
   }
 }
