@@ -1,0 +1,30 @@
+{
+    "version": "0.1.0",
+    "tasks": [
+        {
+            "taskName": "compile",
+            "command": "tsc",
+            "args": ["-p", "."],
+            "isBuildCommand": true,
+            "isShellCommand": true,
+            "showOutput": "silent",
+			"problemMatcher": "$tsc"
+        },
+        {
+            "taskName": "test",
+            "command": "npm",
+            "args": ["test"],
+            "isShellCommand": true,
+            "suppressTaskName": true,
+            "showOutput": "always"
+        },
+        {
+            "taskName": "build",
+            "command": "gulp",
+            "args": ["build"],
+            "isShellCommand": true,
+            "suppressTaskName": true,
+            "showOutput": "always"
+        }
+    ]
+}

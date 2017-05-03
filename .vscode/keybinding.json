@@ -1,0 +1,16 @@
+[
+	{
+		"key": "f4",
+		"command": "workbench.action.tasks.runTask",
+		"args": "test"
+	},
+	{
+		"key": "f6",
+		"command": "workbench.action.tasks.runTask",
+		"args": "build"
+	},
+	{
+		"key": "ctrl+k ctrl+d",
+		"command": "editor.action.formatDocument"
+	}
+]

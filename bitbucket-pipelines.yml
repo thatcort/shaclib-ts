@@ -1,0 +1,24 @@
+# This is a sample build configuration for Javascript (Node.js).
+# Check our guides at https://confluence.atlassian.com/x/14UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: node:latest
+
+pipelines:
+  branches:
+    master:
+     - step:
+        script: # Build, test and publish package
+          - npm install
+          - npm run build
+          - npm run test:unit
+          - printf "//`node -p \"require('url').parse(process.env.NPM_REGISTRY_URL || 'https://registry.npmjs.org').host\"`/:_authToken=${NPM_TOKEN}\nregistry=${NPM_REGISTRY_URL:-https://registry.npmjs.org}\n" >> ~/.npmrc
+          - npm publish
+    development:
+      - step:
+         script: # Just build and test package
+          - npm install
+          - npm run build
+          - npm run test:unit
+         

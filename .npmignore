@@ -1,0 +1,16 @@
+.vscode
+compiled
+node_modules
+.nyc_output
+coverage
+src
+test
+.gitignore
+.npmignore
+.nycrc
+bitbucket-pipelines.yml
+cSpell.json
+gulpfile.ts
+mocha.opts
+tsconfig.json
+tslint.json

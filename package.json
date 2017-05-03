@@ -1,0 +1,80 @@
+{
+  "name": "shaclib-ts",
+  "version": "1.0.0",
+  "description": "TypeScript implementation of the evolving W3C Shapes Constraint Language (SHACL)",
+  "homepage": "https://bitbucket.org/vladimir_djurdjevic/shaclib.ts",
+  "keywords": [
+    "rdf",
+    "sparql",
+    "shacl"
+  ],
+  "author": "Vladimir Djurdjevic <vladimirdjurdjevic93@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://bitbucket.org/vladimir_djurdjevic/shaclib.ts/issues",
+    "email": "vladimirdjurdjevic93@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://vladimir_djurdjevic@bitbucket.org/vladimir_djurdjevic/shaclib.ts.git"
+  },
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "tsc": "tsc",
+    "gulp": "gulp",
+    "lint": "npm run gulp lint",
+    "clean": "npm run gulp clean",
+    "clean:lib": "npm run gulp clean-lib",
+    "clean:coverage": "npm run gulp clean-coverage",
+    "copy:lib": "npm run gulp copy-lib",
+    "copy:datasets": "npm run gulp copy-datasets",
+    "compile": "npm run tsc && npm run copy:datasets",
+    "reexport": "npm run gulp reexport",
+    "build": "npm run gulp build",
+    "publish": "npm run gulp publish",
+    "test:unit": "nyc mocha test/unit/**/*.ts",
+    "test:integration": "nyc mocha test/integration/**/*.ts --timeout 10000",
+    "test:e2e": "nyc mocha test/e2e/**/*.ts --timeout 10000",
+    "test": "nyc mocha test/**/*.ts --timeout 10000"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.5.1",
+    "@types/chai-as-promised": "0.0.30",
+    "@types/del": "^2.2.32",
+    "@types/gulp": "^4.0.2",
+    "@types/gulp-typescript": "^2.13.0",
+    "@types/merge2": "^0.3.30",
+    "@types/mocha": "^2.2.41",
+    "@types/n3": "0.0.2",
+    "@types/node": "^7.0.13",
+    "@types/run-sequence": "0.0.29",
+    "@types/sinon": "^2.1.2",
+    "@types/sinon-as-promised": "^4.0.6",
+    "babel-core": "^6.24.1",
+    "babel-preset-es2016": "^6.24.1",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-reexport": "^0.1.21",
+    "gulp-replace": "^0.5.4",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-tslint": "^8.0.0",
+    "gulp-typescript": "^3.1.6",
+    "merge2": "^1.0.3",
+    "mocha": "^3.2.0",
+    "nyc": "9.0.1",
+    "run-sequence": "^1.2.2",
+    "sinon": "^2.1.0",
+    "sinon-as-promised": "^4.0.3",
+    "source-map-support": "^0.4.14",
+    "ts-node": "^3.0.2",
+    "tslint": "^5.1.0",
+    "typescript": "^2.2.2"
+  },
+  "dependencies": {
+    "rdflib-ts": "^1.0.2"
+  }
+}
