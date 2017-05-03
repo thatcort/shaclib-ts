@@ -34,7 +34,7 @@ export class RestDBMSAdapter extends RdfDBMSAdapter {
 				  .send(this.createRequestBody(storeName))
 				  .set('Content-Type', this.options.contentType);
 
-		return new RemoteSparqlEndpoint(storeName, `${this.options.storeAccessEndpoint}/${storeName}`);
+		return new RemoteSparqlEndpoint(storeName, `${this.options.storeAccessEndpoint}`);
 	}
 
 	public async deleteRdfStoreAsync(store: RdfStore): Promise<void> {

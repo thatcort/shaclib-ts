@@ -1,7 +1,7 @@
 import { RdfDBMSAdapter } from './rdf-dbms-adapter';
 import { NotSupportedError } from 'rdflib-ts';
 import { Fuseki250RestAdapter } from './rest/fuseki-adapters';
-import { BrightstarDB1133RestAdapter } from './rest/brightstartdb-adapters';
+import { BrightstarDB1133RestAdapter } from './rest/brightstardb-adapters';
 
 export class DBMSAdapterManager {
 	private adapters: Map<string, Function>;
