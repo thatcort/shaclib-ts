@@ -11,9 +11,9 @@ export interface IShaclPropertyPath {
 export class ShaclPropertyShape extends ShaclShape {
 	public path: IShaclPropertyPath;
 
-	public constructor(iri: IRI) {
+	public constructor(iri: IRI, path?: IShaclPropertyPath) {
 		super(iri);
-		this.path = null;
+		this.path = path;
 	}
 
 	public createValidationResult(focusNode: NonBlankNode, value?: RdfTerm, sourceConstraintComponent?: IRI): IShaclValidationResult {

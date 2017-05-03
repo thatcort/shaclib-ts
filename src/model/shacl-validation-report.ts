@@ -1,19 +1,6 @@
-import {
-    ConformsIRI,
-    DetailIRI,
-    FocusNodeIRI,
-    RdfTypeIRI,
-    ResultIRI,
-    ResultMessageIRI,
-    ResultPathIRI,
-    ResultSeverityIRI,
-    ShapesGraphWellFormedIRI,
-    SourceConstraintComponentIRI,
-    SourceShapeIRI,
-    ValidationReportIRI,
-    ValidationResultIRI,
-    ValueIRI
-} from './constants';
+import { ValidationReportIRI, ValidationResultIRI, ValueIRI } from './constants';
+import { ResultSeverityIRI, ShapesGraphWellFormedIRI, SourceConstraintComponentIRI, SourceShapeIRI } from './constants';
+import { ConformsIRI, DetailIRI, FocusNodeIRI, RdfTypeIRI, ResultIRI, ResultMessageIRI, ResultPathIRI } from './constants';
 import { BlankNode, IRI, Literal, NonBlankNode, NQuad, RdfFactory, RdfTerm, XsdBooleanIRI, TypedLiteral } from 'rdflib-ts';
 
 export interface IShaclValidationResult {
