@@ -13,7 +13,11 @@ export class ShaclPropertyShape extends ShaclShape {
 
 	public constructor(iri: IRI, path?: IShaclPropertyPath) {
 		super(iri);
-		this.path = path;
+		this.path = {
+			pathType: null,
+			pathValue: null,
+			sparqlPathString: null
+		};
 	}
 
 	public createValidationResult(focusNode: NonBlankNode, value?: RdfTerm, sourceConstraintComponent?: IRI): IShaclValidationResult {

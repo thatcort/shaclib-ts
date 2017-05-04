@@ -13,7 +13,6 @@ describe('ShaclNodeShape - Unit', () => {
 			let propertyShape = new ShaclPropertyShape(new IRI('http://example.org#someNodeShape'), null);
 
 			propertyShape.iri.value.should.equal('http://example.org#someNodeShape');
-			should.equal(propertyShape.path, null);
 			propertyShape.isChildShape.should.be.false;
 			propertyShape.targetClasses.should.be.empty;
 			propertyShape.targetNodes.should.be.empty;

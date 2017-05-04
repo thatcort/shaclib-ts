@@ -25,6 +25,14 @@
             "isShellCommand": true,
             "suppressTaskName": true,
             "showOutput": "always"
+        },
+        {
+            "taskName": "link",
+            "command": "npm",
+            "args": ["run", "link"],
+            "isShellCommand": true,
+            "suppressTaskName": true,
+            "showOutput": "always"
         }
     ]
 }
