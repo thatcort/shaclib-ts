@@ -58,7 +58,11 @@
         "SHAC",
         "Brightstar",
         "brightstartdb",
-        "brightstardb"
+        "brightstardb",
+        "Xone",
+        "STRLEN",
+        "'clui'",
+        "clui"
     ],
     // flagWords - list of words to be always considered incorrect
     // This is useful for offensive words and common spelling errors.
