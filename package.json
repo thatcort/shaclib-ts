@@ -84,11 +84,15 @@
     "typescript": "^2.2.2"
   },
   "dependencies": {
+    "@types/node": "^7.0.18",
+    "@types/sinon": "^2.2.1",
     "cli": "^1.0.1",
     "cli-color": "^1.2.0",
     "clui": "^0.3.1",
     "rdflib-ts": "^1.1.1",
     "superagent": "^3.5.2",
+    "ts-node": "^3.0.4",
+    "tslint": "^5.2.0",
     "uuid": "^3.0.1"
   }
 }

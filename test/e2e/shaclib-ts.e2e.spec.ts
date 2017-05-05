@@ -61,4 +61,20 @@ describe('SHACLib.ts', () => {
 		});
 	});
 
+	context('4.2.1 sh:minCount', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_2_1_sh_minCount_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_2_1_sh_minCount_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:MinCountConstraintComponent', 'sh:Violation', 'ex:Bob', 'ex:name').should.be.true;
+		});
+	});
+
+	context('4.2.2 sh:maxCount', () => {
+		it('should should not produce validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_2_2_sh_maxCount_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_2_2_sh_maxCount_example_data_graph.ttl');
+			report.results.should.be.empty;
+		});
+	});
+
 });
