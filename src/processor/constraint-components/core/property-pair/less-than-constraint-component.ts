@@ -19,12 +19,11 @@ export class LessThanConstraintComponent extends ConstraintComponent {
 				ASK
 				{
 					${focusNode} ${lessThanParam} ?value .
-					BIND (${valueNode} < ?value AS ?result) .
-					FILTER (!bound(?result) || !(?result)) .
+					FILTER (${valueNode} >= ?value) .
 				}
 			`);
 
-			if (!results.boolean) {
+			if (results.boolean) {
 				validationResults.push(sourceShape.createValidationResult(focusNode, valueNode, this.iri));
 			}
 		}

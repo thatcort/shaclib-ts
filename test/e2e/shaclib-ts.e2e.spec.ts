@@ -129,4 +129,30 @@ describe('SHACLib.ts', () => {
 			TestHelper.hasValidationResult(report, 'sh:UniqueLangConstraintComponent', 'sh:Violation', 'ex:Bob', 'ex:label').should.be.true;
 		});
 	});
+
+	context('4.5.1 sh:equals', () => {
+		it('should not produce validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_5_1_sh_equals_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_5_1_sh_equals_example_data_graph.ttl');
+			report.results.should.be.empty;
+		});
+	});
+
+	context('4.5.2 sh:disjoint', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_5_2_sh_disjoint_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_5_2_sh_disjoint_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:DisjointConstraintComponent', 'sh:Violation', 'ex:Germany', 'ex:prefLabel', 'Germany').should.be.true;
+		});
+	});
+
+	context('4.5.3-4 sh:lessThan and sh:lessThanOrEquals', () => {
+		it('should produce two validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_5_3-4_sh_lessThan-lessThanOrEquals_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_5_3-4_sh_lessThan-lessThanOrEquals_example_data_graph.ttl');
+			report.results.should.have.lengthOf(2);
+
+			TestHelper.hasValidationResult(report, 'sh:LessThanConstraintComponent', 'sh:Violation', 'ex:Bob', 'ex:cats', '6').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:LessThanOrEqualsConstraintComponent', 'sh:Violation', 'ex:Alice', 'ex:pigs', '8').should.be.true;
+		});
+	});
 });

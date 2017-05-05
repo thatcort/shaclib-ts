@@ -22,7 +22,7 @@ export class DisjointConstraintComponent extends ConstraintComponent {
 				}
 			`);
 
-		let disjointValues = results.results.bindings.map(b => this.createRdfTermFromSparqlBinding(b.object));
+		let disjointValues = results.results.bindings.map(b => RdfFactory.createRdfTermFromSparqlResultBinding(b.object));
 
 		for (let valueNode of valueNodes) {
 			if (disjointValues.some(dv => dv.toString() === valueNode.toString())) {
@@ -32,12 +32,4 @@ export class DisjointConstraintComponent extends ConstraintComponent {
 
 		return validationResults;
 	}
-
-	private createRdfTermFromSparqlBinding(binding: ISparqlQueryResultBinding): RdfTerm {
-        switch (binding.type) {
-            case 'uri': return new IRI(binding.value);
-            case 'bnode': return new BlankNode(binding.value);
-            default: return RdfFactory.createLiteral(binding.value, binding['xml:lang'], binding.datatype);
-        }
-    }
 } 

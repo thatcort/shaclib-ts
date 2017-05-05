@@ -36,7 +36,7 @@ export class EqualsConstraintComponent extends ConstraintComponent {
 			`);
 
 		for (let result of results.results.bindings) {
-			let rdfTerm = this.createRdfTermFromSparqlBinding(result.object);
+			let rdfTerm = RdfFactory.createRdfTermFromSparqlResultBinding(result.object);
 			if (!valueNodes.some(vn => vn.toString() === rdfTerm.toString())) {
 				validationResults.push(sourceShape.createValidationResult(focusNode, rdfTerm, this.iri));
 			}
@@ -44,12 +44,4 @@ export class EqualsConstraintComponent extends ConstraintComponent {
 
 		return validationResults;
 	}
-
-	private createRdfTermFromSparqlBinding(binding: ISparqlQueryResultBinding): RdfTerm {
-        switch (binding.type) {
-            case 'uri': return new IRI(binding.value);
-            case 'bnode': return new BlankNode(binding.value);
-            default: return RdfFactory.createLiteral(binding.value, binding['xml:lang'], binding.datatype);
-        }
-    }
 } 
