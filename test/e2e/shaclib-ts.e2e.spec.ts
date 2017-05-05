@@ -77,4 +77,19 @@ describe('SHACLib.ts', () => {
 		});
 	});
 
+	context('4.3 Value Range Constraint Components', () => {
+		it('should should produce seven validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_3_value_range_constraint_components_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_3_value_range_constraint_components_example_data_graph.ttl');
+			report.results.should.have.lengthOf(7);
+
+			TestHelper.hasValidationResult(report, 'sh:MinInclusiveConstraintComponent', 'sh:Violation', 'ex:Ted', 'ex:age', 'twenty one').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:MaxInclusiveConstraintComponent', 'sh:Violation', 'ex:Ted', 'ex:age', 'twenty one').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:MaxInclusiveConstraintComponent', 'sh:Violation', 'ex:Alice', 'ex:age', '220').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:MinExclusiveConstraintComponent', 'sh:Violation', 'ex:Ted', 'ex:pets', 'twenty one').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:MinExclusiveConstraintComponent', 'sh:Violation', 'ex:Bob', 'ex:pets', '1').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:MaxExclusiveConstraintComponent', 'sh:Violation', 'ex:Ted', 'ex:pets', 'twenty one').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:MaxExclusiveConstraintComponent', 'sh:Violation', 'ex:Alice', 'ex:pets', '5').should.be.true;
+		});
+	});
+
 });
