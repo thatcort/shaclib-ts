@@ -18,7 +18,7 @@ export class DatatypeConstraintComponent extends ConstraintComponent {
 		for (let valueNode of valueNodes) {
 			let isTypedLiteral = valueNode instanceof TypedLiteral;
 
-			if ((isTypedLiteral && (<TypedLiteral>valueNode).dataType.value !== dataTypeValue) || (!isTypedLiteral && dataTypeValue === XsdStringIRI.value)) {
+			if ((isTypedLiteral && (<TypedLiteral>valueNode).dataType.value !== dataTypeValue) || (!isTypedLiteral && dataTypeValue !== XsdStringIRI.value)) {
 				validationResults.push(sourceShape.createValidationResult(focusNode, valueNode, this.iri));
 			}
 		}

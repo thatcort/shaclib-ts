@@ -15,7 +15,7 @@ export class NodeKindConstraintComponent extends ConstraintComponent {
 		let validationResults: IShaclValidationResult[] = [];
 
 		let nodeKindParameter = constraint.get(NodeKindParameterIRI.value);
-		let nodeKindParameterValue = (nodeKindParameter as IRI).value;
+		let nodeKindParameterValue = (<IRI>nodeKindParameter).value;
 
 		for (let valueNode of valueNodes) {
 			switch (nodeKindParameterValue) {

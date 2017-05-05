@@ -42,5 +42,23 @@ describe('SHACLib.ts', () => {
 		});
 	});
 
+	context('4.1.2 sh:datatype', () => {
+		it('should produce two validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_1_2_sh_datatype_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_1_2_sh_datatype_example_data_graph.ttl');
+			report.results.should.have.lengthOf(2);
+
+			TestHelper.hasValidationResult(report, 'sh:DatatypeConstraintComponent', 'sh:Violation', 'ex:Bob', 'ex:age', 'twenty two').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:DatatypeConstraintComponent', 'sh:Violation', 'ex:Carol', 'ex:age', '23').should.be.true;
+		});
+	});
+
+	context('4.1.3 sh:nodeKind', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_1_3_sh_nodeKind_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_1_3_sh_nodeKind_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:NodeKindConstraintComponent', 'sh:Violation', 'Bob', undefined, 'Bob').should.be.true;
+		});
+	});
 
 });

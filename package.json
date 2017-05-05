@@ -40,7 +40,7 @@
     "test:unit": "nyc mocha test/unit/**/*.ts",
     "test:integration": "nyc mocha test/integration/**/*.ts --timeout 10000",
     "test:e2e": "nyc mocha test/e2e/**/*.ts --timeout 10000",
-    "test": "nyc mocha test/**/*.ts --timeout 10000"
+    "test": "nyc mocha test/e2e/**/*.ts --timeout 10000"
   },
   "devDependencies": {
     "@types/chai": "^3.5.1",
@@ -87,7 +87,7 @@
     "cli": "^1.0.1",
     "cli-color": "^1.2.0",
     "clui": "^0.3.1",
-    "rdflib-ts": "^1.0.2",
+    "rdflib-ts": "^1.1.1",
     "superagent": "^3.5.2",
     "uuid": "^3.0.1"
   }
