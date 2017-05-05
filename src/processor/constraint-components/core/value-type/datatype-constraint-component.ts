@@ -13,13 +13,12 @@ export class DatatypeConstraintComponent extends ConstraintComponent {
 		let validationResults: IShaclValidationResult[] = [];
 
 		let dataTypeParameter = constraint.get(DatatypeParameterIRI.value);
-		let dataTypeValue = (dataTypeParameter as IRI).value;
+		let dataTypeValue = (<IRI>dataTypeParameter).value;
 
 		for (let valueNode of valueNodes) {
-			let isPlainStringLiteral = (valueNode instanceof PlainLiteral || valueNode instanceof LangLiteral) && dataTypeValue === XsdStringIRI.value;
-			let isCorrectType = valueNode instanceof TypedLiteral && valueNode.dataType.value === dataTypeValue;
+			let isTypedLiteral = valueNode instanceof TypedLiteral;
 
-			if (!isPlainStringLiteral && !isCorrectType) {
+			if ((isTypedLiteral && (<TypedLiteral>valueNode).dataType.value !== dataTypeValue) || (!isTypedLiteral && dataTypeValue === XsdStringIRI.value)) {
 				validationResults.push(sourceShape.createValidationResult(focusNode, valueNode, this.iri));
 			}
 		}

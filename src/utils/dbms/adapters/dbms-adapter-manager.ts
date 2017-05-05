@@ -1,7 +1,6 @@
 import { RdfDBMSAdapter } from './rdf-dbms-adapter';
 import { NotSupportedError } from 'rdflib-ts';
 import { Fuseki250RestAdapter } from './rest/fuseki-adapters';
-import { BrightstarDB1133RestAdapter } from './rest/brightstardb-adapters';
 
 export class DBMSAdapterManager {
 	private adapters: Map<string, Function>;
@@ -28,7 +27,6 @@ export class DBMSAdapterManager {
 
 	private registerSupportedAdapters(): void {
 		this.registerAdapter('Apache Jena Fuseki', '2.5.0', Fuseki250RestAdapter);
-		this.registerAdapter('BrightstarDB', '1.13.3', BrightstarDB1133RestAdapter);
 	}
 }
 
