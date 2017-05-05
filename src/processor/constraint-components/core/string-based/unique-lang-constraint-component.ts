@@ -6,7 +6,7 @@ import { LangLiteral, Literal, NonBlankNode, RdfNode, RdfStore, BlankNode, IRI, 
 
 export class UniqueLangConstraintComponent extends ConstraintComponent {
 	public constructor() {
-		super(UniqueLangComponentIRI, [{ iri: UniqueLangParameterIRI, listTaking: true }])
+		super(UniqueLangComponentIRI, [{ iri: UniqueLangParameterIRI }])
 	}
 
 	public async validateAsync(shapes: ShaclShape[], sourceShape: ShaclShape, dataGraph: RdfStore, focusNode: NonBlankNode, valueNodes: RdfNode[], constraint: Map<string, any>): Promise<IShaclValidationResult[]> {
@@ -17,10 +17,8 @@ export class UniqueLangConstraintComponent extends ConstraintComponent {
 
 		if (uniqueLangValue.toLowerCase() === 'true') {
 			let langLiterals = valueNodes.filter(vn => vn instanceof LangLiteral) as LangLiteral[];
-			let multiLangLiterals = langLiterals.filter(ll => langLiterals.filter(literal => literal.language === ll.language).length > 1);
-
-			for (let literal of multiLangLiterals) {
-				validationResults.push(sourceShape.createValidationResult(focusNode, literal, this.iri));
+			if (langLiterals.some(l => langLiterals.some(ll => l !== ll && l.language === ll.language))) {
+				validationResults.push(sourceShape.createValidationResult(focusNode, undefined, this.iri));
 			}
 		}
 

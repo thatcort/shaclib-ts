@@ -71,14 +71,14 @@ describe('SHACLib.ts', () => {
 	});
 
 	context('4.2.2 sh:maxCount', () => {
-		it('should should not produce validation results', async () => {
+		it('should not produce validation results', async () => {
 			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_2_2_sh_maxCount_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_2_2_sh_maxCount_example_data_graph.ttl');
 			report.results.should.be.empty;
 		});
 	});
 
 	context('4.3 Value Range Constraint Components', () => {
-		it('should should produce seven validation results', async () => {
+		it('should produce seven validation results', async () => {
 			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_3_value_range_constraint_components_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_3_value_range_constraint_components_example_data_graph.ttl');
 			report.results.should.have.lengthOf(7);
 
@@ -92,4 +92,41 @@ describe('SHACLib.ts', () => {
 		});
 	});
 
+	context('4.4 sh:minLength and sh:maxLength', () => {
+		it('should produce two validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_4_sh_min_max_length_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_4_sh_min_max_length_example_data_graph.ttl');
+			report.results.should.have.lengthOf(2);
+
+			TestHelper.hasValidationResult(report, 'sh:MinLengthConstraintComponent', 'sh:Violation', 'ex:Bob', 'ex:password', '12345').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:MaxLengthConstraintComponent', 'sh:Violation', 'ex:Alice', 'ex:password', '1234567890ABC').should.be.true;
+		});
+	});
+
+	context('4.4.3 sh:pattern', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_4_3_sh_pattern_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_4_3_sh_pattern_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:PatternConstraintComponent', 'sh:Violation', 'ex:Carol', 'ex:bCode', 'C103').should.be.true;
+		});
+	});
+
+	context('4.4.4 sh:languageIn', () => {
+		it('should produce three validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_4_4_sh_languageIn_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_4_4_sh_languageIn_example_data_graph.ttl');
+			report.results.should.have.lengthOf(3);
+
+			TestHelper.hasValidationResult(report, 'sh:LanguageInConstraintComponent', 'sh:Violation', 'ex:Berg', 'ex:prefLabel', 'Berg').should.be.true;
+			TestHelper.hasValidationResult(report, 'sh:LanguageInConstraintComponent', 'sh:Violation', 'ex:Berg', 'ex:prefLabel', 'ex:BergLabel').should.be.true;
+		});
+	});
+
+	context('4.4.5 sh:uniqueLang', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_4_5_sh_uniqueLang_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_4_5_sh_uniqueLang_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:UniqueLangConstraintComponent', 'sh:Violation', 'ex:Bob', 'ex:label').should.be.true;
+		});
+	});
 });

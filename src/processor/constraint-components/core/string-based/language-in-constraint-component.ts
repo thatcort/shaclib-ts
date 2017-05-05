@@ -15,7 +15,8 @@ export class LanguageInConstraintComponent extends ConstraintComponent {
 		let allowedLangs = constraint.get(LanguageInParameterIRI.value) as Literal[];
 
 		for (let valueNode of valueNodes) {
-			if (!(valueNode instanceof LangLiteral) || allowedLangs.some(l => l.value === (valueNode as LangLiteral).language)) {
+			if (!(valueNode instanceof LangLiteral) || !allowedLangs.some(l => l.value === (<LangLiteral>valueNode).language 
+					|| l.value === (valueNode as LangLiteral).language.replace(/-[A-Za-z]+$/, ''))) {
 				validationResults.push(sourceShape.createValidationResult(focusNode, valueNode, this.iri));
 			}
 		}
