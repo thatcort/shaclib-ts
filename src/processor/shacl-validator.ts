@@ -31,7 +31,7 @@ export class ShaclValidator {
 			}
 		}
 
-		report.conforms = report.results.some(r => /violation/gi.test(r.resultSeverity.relativeValue));
+		report.conforms = !report.results.some(r => /violation/gi.test(r.resultSeverity.relativeValue));
 		return report;
 	}
 

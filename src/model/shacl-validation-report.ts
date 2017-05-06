@@ -37,31 +37,47 @@ export class ShaclValidationReport {
 
 		for (let result of this.results) {
 			quads.push(new NQuad(reportId, ResultIRI, result.resultId, graph));
-			quads.push(new NQuad(result.resultId, RdfTypeIRI, ValidationResultIRI, graph));
+			quads = quads.concat(this.resultToNQuads(result));
+			quads = quads.concat(this.detailsToNQuads(result, graph));
+		}
 
-			quads.push(new NQuad(result.resultId, FocusNodeIRI, result.focusNode, graph));
-			quads.push(new NQuad(result.resultId, ResultSeverityIRI, result.resultSeverity, graph));
-			quads.push(new NQuad(result.resultId, SourceConstraintComponentIRI, result.sourceConstraintComponent, graph));
+		return quads;
+	}
 
-			if (result.resultPath) {
-				quads.push(new NQuad(result.resultId, ResultPathIRI, result.resultPath, graph));
-			}
+	public resultToNQuads(result: IShaclValidationResult, graph?: IRI): NQuad[] {
+		let quads: NQuad[] = [];
 
-			if (result.value) {
-				quads.push(new NQuad(result.resultId, ValueIRI, result.value, graph));
-			}
+		quads.push(new NQuad(result.resultId, RdfTypeIRI, ValidationResultIRI, graph));
+		quads.push(new NQuad(result.resultId, FocusNodeIRI, result.focusNode, graph));
+		quads.push(new NQuad(result.resultId, ResultSeverityIRI, result.resultSeverity, graph));
+		quads.push(new NQuad(result.resultId, SourceConstraintComponentIRI, result.sourceConstraintComponent, graph));
 
-			if (result.sourceShape) {
-				quads.push(new NQuad(result.resultId, SourceShapeIRI, result.sourceShape, graph));
-			}
+		if (result.resultPath) {
+			quads.push(new NQuad(result.resultId, ResultPathIRI, result.resultPath, graph));
+		}
 
-			for (let detail of result.details) {
-				quads.push(new NQuad(result.resultId, DetailIRI, detail.resultId, graph));
-			}
+		if (result.value) {
+			quads.push(new NQuad(result.resultId, ValueIRI, result.value, graph));
+		}
 
-			for (let message of result.resultMessages) {
-				quads.push(new NQuad(result.resultId, ResultMessageIRI, message, graph));
-			}
+		if (result.sourceShape) {
+			quads.push(new NQuad(result.resultId, SourceShapeIRI, result.sourceShape, graph));
+		}
+
+		for (let message of result.resultMessages) {
+			quads.push(new NQuad(result.resultId, ResultMessageIRI, message, graph));
+		}
+
+		return quads;
+	}
+
+	public detailsToNQuads(result: IShaclValidationResult, graph?: IRI): NQuad[] {
+		let quads: NQuad[] = [];
+
+		for (let detail of result.details) {
+			quads.push(new NQuad(result.resultId, DetailIRI, detail.resultId, graph));
+			quads = quads.concat(this.resultToNQuads(detail, graph));
+			quads = quads.concat(this.detailsToNQuads(detail, graph));
 		}
 
 		return quads;
