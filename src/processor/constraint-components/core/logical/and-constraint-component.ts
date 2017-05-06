@@ -20,8 +20,9 @@ export class AndConstraintComponent extends ConstraintComponent {
 			for (let shape of andShapes) {
 				let results = await validator.validateShape(shapes, shape, dataGraph, [<NonBlankNode>valueNode]);
 				if (results.length > 0) {
-					validationResults.push(sourceShape.createValidationResult(focusNode, valueNode, this.iri));
-					break;
+					let validationResult = sourceShape.createValidationResult(focusNode, valueNode, this.iri);
+					validationResult.details = validationResult.details.concat(results);
+					validationResults.push(validationResult);
 				}
 			}
 		}

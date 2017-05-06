@@ -18,17 +18,21 @@ export class OrConstraintComponent extends ConstraintComponent {
 
 		for (let valueNode of valueNodes) {
 			let conforms = false;
+			let details: IShaclValidationResult[] = [];
 
 			for (let shape of orShapes) {
 				let results = await validator.validateShape(shapes, shape, dataGraph, [<NonBlankNode>valueNode]);
 				if (results.length === 0) {
 					conforms = true;
-					break;
+				} else {
+					details = details.concat(results);
 				}
 			}
 
 			if (!conforms) {
-				validationResults.push(sourceShape.createValidationResult(focusNode, valueNode, this.iri));
+				let validationResult = sourceShape.createValidationResult(focusNode, valueNode, this.iri);
+				validationResult.details = validationResult.details.concat(details);
+				validationResults.push(validationResult);
 			}
 		}
 

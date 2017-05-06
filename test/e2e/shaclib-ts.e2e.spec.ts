@@ -155,4 +155,39 @@ describe('SHACLib.ts', () => {
 			TestHelper.hasValidationResult(report, 'sh:LessThanOrEqualsConstraintComponent', 'sh:Violation', 'ex:Alice', 'ex:pigs', '8').should.be.true;
 		});
 	});
+
+	context('4.6.1 sh:not', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_6_1_sh_not_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_6_1_sh_not_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:NotConstraintComponent', 'sh:Violation', 'ex:InvalidInstance1').should.be.true;
+		});
+	});
+
+	context('4.6.2 sh:and', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_6_2_sh_and_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_6_2_sh_and_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:AndConstraintComponent', 'sh:Violation', 'ex:InvalidInstance').should.be.true;
+			TestHelper.hasValidationResult(report.results[0].details, 'sh:MaxCountConstraintComponent', 'sh:Violation', 'ex:InvalidInstance', 'ex:property').should.be.true;
+		});
+	});
+
+	context('4.6.3 sh:or', () => {
+		it('should not produce validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_6_3_sh_or_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_6_3_sh_or_example_data_graph.ttl');
+			report.results.should.be.empty;
+		});
+	});
+
+	context('4.6.4 sh:xone', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_6_4_sh_xone_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_6_4_sh_xone_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:XoneConstraintComponent', 'sh:Violation', 'ex:Dory').should.be.true;
+		});
+	});
 });

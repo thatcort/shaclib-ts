@@ -18,17 +18,24 @@ export class XoneConstraintComponent extends ConstraintComponent {
 
 		for (let valueNode of valueNodes) {
 			let conformCount = 0;
+			let details: IShaclValidationResult[] = [];
 
 			for (let shape of xoneShapes) {
 				let results = await validator.validateShape(shapes, shape, dataGraph, [<NonBlankNode>valueNode]);
 				if (results.length === 0) {
 					conformCount++;
-
-					if (conformCount > 1) {
-						validationResults.push(sourceShape.createValidationResult(focusNode, valueNode, this.iri));
-						break;
-					}
+				} else {
+					details = details.concat(results);
 				}
+			}
+
+			let validationResult = sourceShape.createValidationResult(focusNode, valueNode, this.iri);
+			if (conformCount === 0) {
+				validationResult.details = validationResult.details.concat(details);
+			}
+
+			if (conformCount !== 1) {
+				validationResults.push(validationResult);
 			}
 		}
 
