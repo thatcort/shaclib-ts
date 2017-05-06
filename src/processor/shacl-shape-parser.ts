@@ -281,7 +281,7 @@ export class ShaclShapeParser {
                         this.resolveChildShapeTargets(shape, childShape);
                         constraintValue.push(childShape);
                     } else {
-                        constraintValue.push(this.createRdfTermFromSparqlBinding(element.item));
+                        constraintValue.push(RdfFactory.createRdfTermFromSparqlResultBinding(element.item));
                     }
                 }
             } else {
@@ -292,7 +292,7 @@ export class ShaclShapeParser {
                     this.resolveChildShapeTargets(shape, childShape);
                     constraintValue = childShape;
                 } else {
-                    constraintValue = this.createRdfTermFromSparqlBinding(result.constraintValue);
+                    constraintValue = RdfFactory.createRdfTermFromSparqlResultBinding(result.constraintValue);
                 }
             }
 
@@ -310,14 +310,6 @@ export class ShaclShapeParser {
             childShape.targetNodes = shape.targetNodes;
             childShape.targetObjectsOf = shape.targetObjectsOf;
             childShape.targetSubjectsOf = shape.targetSubjectsOf;
-        }
-    }
-
-    private createRdfTermFromSparqlBinding(binding: ISparqlQueryResultBinding): RdfTerm {
-        switch (binding.type) {
-            case 'uri': return new IRI(binding.value);
-            case 'bnode': return new BlankNode(binding.value);
-            default: return RdfFactory.createLiteral(binding.value, binding['xml:lang'], binding.datatype);
         }
     }
 

@@ -31,7 +31,7 @@ export class ShaclValidator {
 			}
 		}
 
-		report.conforms = report.results.length === 0;
+		report.conforms = report.results.some(r => /violation/gi.test(r.resultSeverity.relativeValue));
 		return report;
 	}
 
@@ -49,28 +49,12 @@ export class ShaclValidator {
 			let valueNodes = shape instanceof ShaclPropertyShape ? await this.resolveValueNodes(focusNode, shape.path.sparqlPathString, dataGraph) : [focusNode];
 
 			for (let component of constraintComponentMap.entries()) {
-
 				let results = [];
 
-				if (component[1].size > 1) {
-					let tmpMap = new Map<string, any>();
-
-					for (let entry of component[1].entries()) {
-						tmpMap.set(entry[0], entry[1][0]);
-					}
-
-					results = results.concat(await component[0].validateAsync(shapes, shape, dataGraph, focusNode, valueNodes, tmpMap));
-				} else {
-					for (let entry of component[1].entries()) {
-						for (let parameterValue of entry[1]) {
-							let tmpMap = new Map<string, any>();
-							tmpMap.set(entry[0], parameterValue);
-
-							results = results.concat(await component[0].validateAsync(shapes, shape, dataGraph, focusNode, valueNodes, tmpMap));
-						}
-					}
+				for (let constraint of component[1]) {
+					results = results.concat(await component[0].validateAsync(shapes, shape, dataGraph, focusNode, valueNodes, constraint));
 				}
-
+				
 				validationResults = validationResults.concat(results);
 			}
 		}
@@ -85,7 +69,7 @@ export class ShaclValidator {
 			let targetClassQuery = this.buildTargetClassQuery(shape.targetClasses);
 			let targetClassQueryResults = await dataGraph.queryAsync<IFocusNodeQueryResult>(targetClassQuery);
 
-			focusNodes = focusNodes.concat(targetClassQueryResults.results.bindings.map(r => this.createRdfTermFromSparqlBinding(r.focusNode)));
+			focusNodes = focusNodes.concat(targetClassQueryResults.results.bindings.map(r => RdfFactory.createRdfTermFromSparqlResultBinding(r.focusNode)));
 		}
 
 
@@ -93,14 +77,14 @@ export class ShaclValidator {
 			let targetSubjectsOfQuery = this.buildTargetSubjectsOfQuery(shape.targetSubjectsOf);
 			let targetSubjectsOfQueryResults = await dataGraph.queryAsync<IFocusNodeQueryResult>(targetSubjectsOfQuery);
 
-			focusNodes = focusNodes.concat(targetSubjectsOfQueryResults.results.bindings.map(r => this.createRdfTermFromSparqlBinding(r.focusNode)));
+			focusNodes = focusNodes.concat(targetSubjectsOfQueryResults.results.bindings.map(r => RdfFactory.createRdfTermFromSparqlResultBinding(r.focusNode)));
 		}
 
 		if (shape.targetObjectsOf.length > 0) {
 			let targetObjectsOfQuery = this.buildTargetObjectsOfQuery(shape.targetObjectsOf);
 			let targetObjectsOfQueryResults = await dataGraph.queryAsync<IFocusNodeQueryResult>(targetObjectsOfQuery);
 
-			focusNodes = focusNodes.concat(targetObjectsOfQueryResults.results.bindings.map(r => this.createRdfTermFromSparqlBinding(r.focusNode)));
+			focusNodes = focusNodes.concat(targetObjectsOfQueryResults.results.bindings.map(r => RdfFactory.createRdfTermFromSparqlResultBinding(r.focusNode)));
 		}
 
 		return focusNodes;
@@ -110,7 +94,7 @@ export class ShaclValidator {
 		let valueNodesQuery = this.buildValueNodesQuery(focusNode, path);
 		let valueNodesQueryResults = await dataGraph.queryAsync<ITripleQueryResult>(valueNodesQuery);
 
-		return valueNodesQueryResults.results.bindings.map(r => this.createRdfTermFromSparqlBinding(r.object));
+		return valueNodesQueryResults.results.bindings.map(r => RdfFactory.createRdfTermFromSparqlResultBinding(r.object));
 	}
 
 	private buildTargetClassQuery(targetClasses: IRI[]): string {
@@ -165,33 +149,27 @@ export class ShaclValidator {
 		`;
 	}
 
-	private buildConstraintComponentMap(shape: ShaclShape): Map<ConstraintComponent, Map<string, any[]>> {
-		let constraintComponentMap = new Map<ConstraintComponent, Map<string, any>>();
+	private buildConstraintComponentMap(shape: ShaclShape): Map<ConstraintComponent, Map<string, any>[]> {
+		let constraintComponentMap = new Map<ConstraintComponent, Map<string, any>[]>();
 
 		for (let constraint of shape.constraints) {
 			let component = CommonConstraintComponentManager.getConstraintComponentByParameter(constraint.iri);
 
 			if (!constraintComponentMap.has(component)) {
-				constraintComponentMap.set(component, new Map<string, any[]>());
+				constraintComponentMap.set(component, []);
 			}
 
-			let parameterMap = constraintComponentMap.get(component);
-
-			if (!parameterMap.has(constraint.iri.value)) {
-				parameterMap.set(constraint.iri.value, []);
+			let parameterMaps = constraintComponentMap.get(component);
+			
+			if (component.parameters.length === 1 || parameterMaps.length === 0) {
+				let constraintMap = new Map<string, any>();
+				constraintMap.set(constraint.iri.value, constraint.value);
+				parameterMaps.push(constraintMap);
+			} else {
+				parameterMaps[0].set(constraint.iri.value, constraint.value);
 			}
-
-			parameterMap.get(constraint.iri.value).push(constraint.value);
 		}
 
 		return constraintComponentMap;
 	}
-
-	private createRdfTermFromSparqlBinding(binding: ISparqlQueryResultBinding): RdfTerm {
-        switch (binding.type) {
-            case 'uri': return new IRI(binding.value);
-            case 'bnode': return new BlankNode(binding.value);
-            default: return RdfFactory.createLiteral(binding.value, binding['xml:lang'], binding.datatype);
-        }
-    }
 }
