@@ -13,9 +13,6 @@ describe('DBMSAdapterManager - Unit', () => {
 
 			let fuseki = manager.createAdapter('Apache Jena Fuseki', '2.5.0', 'http://localhost:3030');
 			fuseki.should.be.ok;
-
-			let brightstar = manager.createAdapter('BrightstarDB', '1.13.3', 'http://localhost:3030');
-			brightstar.should.be.ok; 
 		});
 	});
 

@@ -8,27 +8,32 @@ import { NonBlankNode, RdfNode, RdfStore, Literal, TypedLiteral, IRI } from 'rdf
 import { MinCountComponentIRI, PropertyParameterIRI, QualifiedMaxCountParameterIRI, QualifiedMinCountParameterIRI } from '../../../../model/constants';
 import { QualifiedValueShapeComponentIRI, QualifiedValueShapeParameterIRI, QualifiedValueShapesDisjointParameterIRI } from '../../../../model/constants';
 
-export class QualifiedMaxCountConstraintComponent extends ConstraintComponent {
+export class QualifiedValueShapeConstraintComponent extends ConstraintComponent {
 	public constructor() {
 		super(QualifiedValueShapeComponentIRI, [
 			{ iri: QualifiedValueShapeParameterIRI, shapeExpecting: true },
 			{ iri: QualifiedMaxCountParameterIRI },
+			{ iri: QualifiedMinCountParameterIRI },
 			{ iri: QualifiedValueShapesDisjointParameterIRI, optional: true }
-		])
+		]);
 	}
 
 	public async validateAsync(shapes: ShaclShape[], sourceShape: ShaclShape, dataGraph: RdfStore, focusNode: NonBlankNode, valueNodes: RdfNode[], constraint: Map<string, any>): Promise<IShaclValidationResult[]> {
 		let validationResults: IShaclValidationResult[] = [];
 
 		let valueShape = constraint.get(QualifiedValueShapeParameterIRI.value) as ShaclShape;
-		let disjoint = (constraint.get(QualifiedValueShapesDisjointParameterIRI.value) as Literal).value;
-		let maxCount = Number.parseInt((constraint.get(QualifiedMaxCountParameterIRI.value) as TypedLiteral).value);
+		let disjoint = constraint.get(QualifiedValueShapesDisjointParameterIRI.value);
 
-		let validator = new ShaclValidator()
+		let maxCountParameter = constraint.get(QualifiedMaxCountParameterIRI.value);
+		let minCountParameter = constraint.get(QualifiedMinCountParameterIRI.value);
 
+		let maxCountValue = maxCountParameter ? Number.parseInt((<TypedLiteral>maxCountParameter).value) : undefined;
+		let minCountValue = minCountParameter ? Number.parseInt((<TypedLiteral>minCountParameter).value) : undefined;
+		
+		let validator = new ShaclValidator();
 		let siblingShapes: ShaclShape[] = [];
 
-		if (disjoint.toLowerCase() === 'true') {
+		if (disjoint && disjoint.value.toLowerCase() === 'true') {
 			siblingShapes = shapes.filter(s => s.constraints.some(c => c.iri.value === PropertyParameterIRI.value && (c.value as IRI).value === valueShape.iri.value))
 		}
 
@@ -53,7 +58,7 @@ export class QualifiedMaxCountConstraintComponent extends ConstraintComponent {
 			}
 		}
 
-		if (conformCount > maxCount) {
+		if ((maxCountValue && conformCount > maxCountValue) || (minCountValue && conformCount < minCountValue)) {
 			validationResults.push(sourceShape.createValidationResult(focusNode, new TypedLiteral(conformCount.toString(), 'xsd:integer')));
 		}
 

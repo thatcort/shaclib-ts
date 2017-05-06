@@ -21,7 +21,9 @@ export class NodeConstraintComponent extends ConstraintComponent {
 			let results = await validator.validateShape(shapes, nodeShape, dataGraph, [<NonBlankNode>valueNode]);
 
 			if (results.length > 0) {
-				validationResults.push(sourceShape.createValidationResult(focusNode, valueNode, this.iri));
+				let validationResult = sourceShape.createValidationResult(focusNode, valueNode, this.iri);
+				validationResult.details = validationResult.details.concat(results);
+				validationResults.push(validationResult);
 			}
 		}
 

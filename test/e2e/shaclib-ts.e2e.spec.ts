@@ -190,4 +190,43 @@ describe('SHACLib.ts', () => {
 			TestHelper.hasValidationResult(report, 'sh:XoneConstraintComponent', 'sh:Violation', 'ex:Dory').should.be.true;
 		});
 	});
+
+	context('4.7.1 sh:node', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_7_1_sh_node_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_7_1_sh_node_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:NodeConstraintComponent', 'sh:Violation', 'ex:Reto', 'ex:address', 'ex:RetosAddress').should.be.true;
+		});
+	});
+
+	context('4.7.3 Qualified Value Shapes', () => {
+		it('should not produce validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_7_3_sh_qualifiedValueShapes_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_7_3_sh_qualifiedValueShapes_example_data_graph.ttl');
+			report.results.should.be.empty;
+		});
+	});
+
+	context('4.8.1 sh:closed', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_8_1_sh_closed_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_8_1_sh_closed_example_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:ClosedConstraintComponent', 'sh:Violation', 'ex:Bob', 'ex:middleInitial', 'J').should.be.true;
+		});
+	});
+
+	context('4.8.2 sh:hasValue', () => {
+		it('should not produce validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_8_2_sh_hasValue_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_8_2_sh_hasValue_example_data_graph.ttl');
+			report.results.should.be.empty;
+		});
+	});
+
+	context('4.8.3 sh:in', () => {
+		it('should not produce validation results', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/4_8_3_sh_in_example_shape_graph.ttl', 'test/datasets/w3c/ttl/4_8_3_sh_in_example_data_graph.ttl');
+			report.results.should.be.empty;
+		});
+	});
 });

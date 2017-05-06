@@ -15,15 +15,21 @@ export class AndConstraintComponent extends ConstraintComponent {
 
 		let andShapes = constraint.get(AndParameterIRI.value) as ShaclShape[];
 		let validator = new ShaclValidator();
-
+		
 		for (let valueNode of valueNodes) {
+			let details: IShaclValidationResult[] = [];
+			
 			for (let shape of andShapes) {
 				let results = await validator.validateShape(shapes, shape, dataGraph, [<NonBlankNode>valueNode]);
 				if (results.length > 0) {
-					let validationResult = sourceShape.createValidationResult(focusNode, valueNode, this.iri);
-					validationResult.details = validationResult.details.concat(results);
-					validationResults.push(validationResult);
+					details = details.concat(results);
 				}
+			}
+
+			if (details.length > 0) {
+				let validationResult = sourceShape.createValidationResult(focusNode, valueNode, this.iri);
+				validationResult.details = validationResult.details.concat(details);
+				validationResults.push(validationResult);
 			}
 		}
 

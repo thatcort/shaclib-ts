@@ -28,8 +28,7 @@ import { MinExclusiveConstraintComponent } from './core/value-range/min-exclusiv
 import { MinInclusiveConstraintComponent } from './core/value-range/min-inclusive-constraint-component';
 import { PropertyShapeConstraintComponent } from './core/shape-based/property-shape-constraint-component';
 import { LessThanOrEqualsConstraintComponent } from './core/property-pair/less-than-or-equals-constraint-component';
-import { QualifiedMaxCountConstraintComponent } from './core/shape-based/qualified-max-count-constraint-component';
-import { QualifiedMinCountConstraintComponent } from './core/shape-based/qualified-min-count-constraint-component';
+import { QualifiedValueShapeConstraintComponent } from './core/shape-based/qualified-value-shape-constraint-component';
 
 export class ConstraintComponentManager {
 	private components: ConstraintComponent[];
@@ -59,8 +58,7 @@ export class ConstraintComponentManager {
 
 		this.registerComponent(new NodeConstraintComponent());
 		this.registerComponent(new PropertyShapeConstraintComponent());
-		this.registerComponent(new QualifiedMaxCountConstraintComponent());
-		this.registerComponent(new QualifiedMinCountConstraintComponent());
+		this.registerComponent(new QualifiedValueShapeConstraintComponent());
 
 		this.registerComponent(new LanguageInConstraintComponent());
 		this.registerComponent(new MaxLengthConstraintComponent());

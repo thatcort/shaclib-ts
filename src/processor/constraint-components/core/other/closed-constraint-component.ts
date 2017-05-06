@@ -63,7 +63,7 @@ export class ClosedConstraintComponent extends ConstraintComponent {
 				`);
 
 				for (let result of queryResults.results.bindings) {
-					let validationResult = sourceShape.createValidationResult(<NonBlankNode>valueNode, this.createRdfTermFromSparqlBinding(result.object), this.iri);
+					let validationResult = sourceShape.createValidationResult(<NonBlankNode>valueNode, RdfFactory.createRdfTermFromSparqlResultBinding(result.object), this.iri);
 					validationResult.resultPath = new IRI(result.predicate.value);
 
 					validationResults.push(validationResult);
@@ -73,12 +73,4 @@ export class ClosedConstraintComponent extends ConstraintComponent {
 
 		return validationResults;
 	}
-
-	private createRdfTermFromSparqlBinding(binding: ISparqlQueryResultBinding): RdfTerm {
-        switch (binding.type) {
-            case 'uri': return new IRI(binding.value);
-            case 'bnode': return new BlankNode(binding.value);
-            default: return RdfFactory.createLiteral(binding.value, binding['xml:lang'], binding.datatype);
-        }
-    }
 } 
