@@ -7,7 +7,7 @@
 	{
 		"key": "f6",
 		"command": "workbench.action.tasks.runTask",
-		"args": "build"
+		"args": "link"
 	},
 	{
 		"key": "ctrl+k ctrl+d",

@@ -3,3 +3,4 @@ coverage/
 lib/
 node_modules/
 .nyc_output/
+test/3rdParty/apache-jena-fuseki-2.5.0/run/

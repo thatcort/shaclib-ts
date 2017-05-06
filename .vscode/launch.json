@@ -2,6 +2,24 @@
     "version": "0.2.0",
     "configurations": [
         {
+           "type": "node",
+            "request": "launch",
+            "name": "Debug cli",
+            "preLaunchTask": "compile",
+            "program": "${workspaceRoot}/src/cli/shacl-cli.ts",
+            "cwd": "${workspaceRoot}/compiled",
+            "args": [
+                "-s", "test/datasets/w3c/ttl/2_1_4_severity_example_shape_graph.ttl",
+                "-d", "test/datasets/w3c/ttl/2_1_4_severity_example_data_graph.ttl",
+                "-r", "report.ts"
+            ],
+            "outFiles": ["${workspaceRoot}/compiled/**/*.js"],
+            "sourceMaps": true,
+            "runtimeArgs": [
+                "--no-deprecation"
+            ]
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Debug main",

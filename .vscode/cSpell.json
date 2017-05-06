@@ -56,7 +56,16 @@
         "Xsdg",
         "shaclib",
         "SHAC",
-        "Brightstar"
+        "Brightstar",
+        "brightstartdb",
+        "brightstardb",
+        "Xone",
+        "STRLEN",
+        "'clui'",
+        "clui",
+        "DOCKERHOST",
+        "Reto",
+        "Retos"
     ],
     // flagWords - list of words to be always considered incorrect
     // This is useful for offensive words and common spelling errors.

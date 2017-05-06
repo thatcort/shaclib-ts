@@ -1,0 +1,19 @@
+@prefix ex: <http://example.org#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:NumericRangeExampleShape
+	a sh:NodeShape ;
+	sh:targetNode ex:Bob, ex:Alice, ex:Ted ;
+	sh:property [
+		sh:path ex:age ;
+		sh:minInclusive 0 ;
+		sh:maxInclusive 150 ;
+	];
+	sh:property [
+		sh:path ex:pets ;
+		sh:minExclusive 1 ;
+		sh:maxExclusive 5 ;
+	] .
