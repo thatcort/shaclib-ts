@@ -12,8 +12,8 @@ import { ShaclShape } from '../model/shacl-shape';
 import { ShaclValidator } from '../processor/shacl-validator';
 import { RdfDBMSAdapter } from '../utils/dbms/adapters/rdf-dbms-adapter';
 import { ShaclShapeParser } from '../processor/shacl-shape-parser';
-import { IShaclValidationResult, ShaclValidationReport } from '../model/shacl-validation-report';
 import { RdfDataExporter, RdfStore, RdfDataImporter } from 'rdflib-ts';
+import { IShaclValidationResult, ShaclValidationReport } from '../model/shacl-validation-report';
 import { DBMSAdapterManagerInstance } from '../utils/dbms/adapters/dbms-adapter-manager';
 
 export interface IShaclCLIOptions {
@@ -92,7 +92,8 @@ export class ShaclCLI {
 			let report: ShaclValidationReport = await this.validateDataAsync(shapes, dataStore, adapter);
 
 			// Export validation report		
-			await this.exportReportAsync(report, this.options.validationReportPath);
+			let exporter = new RdfDataExporter({ unskolemize: true });
+			await exporter.exportRdfDataAsync(report.toNQuads(), this.options.validationReportPath);
 
 			spinner.stop();
 
@@ -101,7 +102,7 @@ export class ShaclCLI {
 
 			if (report.results.length > 0) {
 				let severityMap = new Map<string, number>();
-				for (let result of this.getAllResults(report)) {
+				for (let result of report.results) {
 					let severity = `${result.resultSeverity.namespace.prefix}:${result.resultSeverity.relativeValue}`;
 					if (!severityMap.has(severity)) {
 						severityMap.set(severity, 0);
@@ -133,17 +134,14 @@ export class ShaclCLI {
 			let shapeStore: RdfStore = null;
 
 			try {
-				let stopwatch = new Stopwatch();
-				let importer = new RdfDataImporter();
+				let importer = new RdfDataImporter({ blankNodePrefix: 'sg', skolemize: true });
 				let shapeProcessor = new ShaclShapeParser();
 
 				// Import shape document into new rdf store created on target DBMS
-				stopwatch.start();
 				shapeStore = await adapter.createRdfStoreAsync(`shapes_${uuid()}`);
 				await importer.importRdfDataAsync(shapeDocumentPath, shapeStore);
 
 				// Parse shapes from rdf store
-				stopwatch.start();
 				let shapes = await shapeProcessor.parseShapesAsync(shapeStore);
 
 				resolve(shapes);
@@ -161,11 +159,9 @@ export class ShaclCLI {
 			let dataStore: RdfStore = null;
 
 			try {
-				let stopwatch = new Stopwatch();
-				let importer = new RdfDataImporter();
+				let importer = new RdfDataImporter({ blankNodePrefix: 'dg', skolemize: true });
 
 				// Import data document into new rdf store created on target DBMS
-				stopwatch.start();
 				dataStore = await adapter.createRdfStoreAsync(`data_${uuid()}`);
 				await importer.importRdfDataAsync(dataDocumentPath, dataStore);
 
@@ -194,23 +190,6 @@ export class ShaclCLI {
 			} finally {
 				// Remove created store from DBMS after validation is over
 				await adapter.deleteRdfStoreAsync(dataStore);
-			}
-		});
-	}
-
-	public exportReportAsync(report: ShaclValidationReport, filePath: string): Promise<void> {
-		return new Promise<void>(async (resolve, reject) => {
-			try {
-				let stopwatch = new Stopwatch();
-				let exporter = new RdfDataExporter();
-
-				// Export report to file with appropriate extension
-				stopwatch.start();
-				await exporter.exportRdfDataAsync(report.toNQuads(), this.options.validationReportPath);
-
-				resolve();
-			} catch (err) {
-				reject(err);
 			}
 		});
 	}
