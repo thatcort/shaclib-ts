@@ -47,7 +47,7 @@ export class TestHelper {
 	public static async runShaclValidator(shapeDocumentPath: string, dataDocumentPath: string): Promise<ShaclValidationReport> {
 		let adapter = DBMSAdapterManagerInstance.createAdapter('Apache Jena Fuseki', '2.5.0', `http://${process.env.LOCALHOST}:3030`);
 
-		let importer = new RdfDataImporter();
+		let importer = new RdfDataImporter({ blankNodePrefix: 'sg', skolemize: true });
 		let shapeProcessor = new ShaclShapeParser();
 
 		let shapeStore = await adapter.createRdfStoreAsync(`shapes_${uuid()}`);
@@ -57,6 +57,7 @@ export class TestHelper {
 		let shapes = await shapeProcessor.parseShapesAsync(shapeStore);
 
 		let dataStore = await adapter.createRdfStoreAsync(`data_${uuid()}`);
+		importer.options.blankNodePrefix = 'dg';
 		await importer.importRdfDataAsync(dataDocumentPath, dataStore);
 
 		let validator = new ShaclValidator();

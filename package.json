@@ -1,6 +1,6 @@
 {
   "name": "shaclib-ts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TypeScript implementation of the evolving W3C Shapes Constraint Language (SHACL)",
   "homepage": "https://bitbucket.org/vladimir_djurdjevic/shaclib.ts",
   "keywords": [
@@ -43,6 +43,8 @@
     "test": "nyc mocha test/**/*.ts --timeout 10000"
   },
   "devDependencies": {
+    "@types/node": "^7.0.18",
+    "@types/sinon": "^2.2.1",
     "@types/chai": "^3.5.1",
     "@types/chai-as-promised": "0.0.30",
     "@types/cli": "^0.11.19",
@@ -53,9 +55,7 @@
     "@types/merge2": "^0.3.30",
     "@types/mocha": "^2.2.41",
     "@types/n3": "0.0.2",
-    "@types/node": "^7.0.13",
     "@types/run-sequence": "0.0.29",
-    "@types/sinon": "^2.1.2",
     "@types/sinon-as-promised": "^4.0.6",
     "@types/superagent": "^2.0.36",
     "@types/uuid": "^2.0.29",
@@ -79,20 +79,16 @@
     "sinon-as-promised": "^4.0.3",
     "source-map-support": "^0.4.14",
     "tree-kill": "^1.1.0",
-    "ts-node": "^3.0.2",
-    "tslint": "^5.1.0",
+    "ts-node": "^3.0.4",
+    "tslint": "^5.2.0",
     "typescript": "^2.2.2"
   },
-  "dependencies": {
-    "@types/node": "^7.0.18",
-    "@types/sinon": "^2.2.1",
+  "dependencies": {   
     "cli": "^1.0.1",
     "cli-color": "^1.2.0",
     "clui": "^0.3.1",
-    "rdflib-ts": "^1.2.1",
-    "superagent": "^3.5.2",
-    "ts-node": "^3.0.4",
-    "tslint": "^5.2.0",
+    "rdflib-ts": "^1.2.2",
+    "superagent": "^3.5.2",   
     "uuid": "^3.0.1"
   }
 }
