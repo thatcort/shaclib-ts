@@ -83,12 +83,12 @@
     "tslint": "^5.2.0",
     "typescript": "^2.2.2"
   },
-  "dependencies": {   
+  "dependencies": {
     "cli": "^1.0.1",
     "cli-color": "^1.2.0",
     "clui": "^0.3.1",
-    "rdflib-ts": "^1.2.2",
-    "superagent": "^3.5.2",   
+    "rdflib-ts": "^1.2.3",
+    "superagent": "^3.5.2",
     "uuid": "^3.0.1"
   }
 }
