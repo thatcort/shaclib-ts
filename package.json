@@ -33,7 +33,6 @@
     "copy:lib": "npm run gulp copy-lib",
     "copy:datasets": "npm run gulp copy-datasets",
     "compile": "npm run tsc && npm run copy:datasets",
-    "reexport": "npm run gulp reexport",
     "build": "npm run gulp build",
     "link": "npm run build && npm link && npm link shaclib-ts",
     "publish": "npm run gulp publish",

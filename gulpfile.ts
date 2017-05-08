@@ -65,10 +65,11 @@ gulp.task('compile-lib', () => {
 
     return merge([
         tsResult.js
-            .pipe(babel({ presets: ['es2016']}))
+            .pipe(babel({ presets: ['es2016'] }))
             .pipe(gulp.dest('lib')),
         tsResult.dts
-            .pipe(gulp.dest('lib'))
+            .pipe(gulp.dest('lib')),
+        gulp.src(['lib/**/*.d.ts', '!index.d.ts'])
             .pipe(reexport.default('index.d.ts', { pathResolver: reexportPathResolver }))
             .pipe(replace('"', `'`))
             .pipe(gulp.dest('lib'))
@@ -80,11 +81,6 @@ gulp.task('reexport-source', () => {
         .pipe(reexport.default('index.ts', { pathResolver: reexportPathResolver }))
         .pipe(replace('"', `'`))
         .pipe(gulp.dest('src'));
-});
-
-
-gulp.task('reexport', done => {
-	run('reexport-source', 'reexport-typings', done);
 });
 
 
