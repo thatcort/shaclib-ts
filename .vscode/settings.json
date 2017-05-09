@@ -1,6 +1,6 @@
 {
     "typescript.check.tscVersion": false,
     "workbench.iconTheme": "vscode-great-icons",
-    "workbench.colorTheme": "Material Theme",
+    "workbench.colorTheme": "One Dark Pro",
     "editor.insertSpaces": false
 }
