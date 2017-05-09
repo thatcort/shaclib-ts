@@ -1,6 +1,6 @@
 {
   "name": "shaclib-ts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "TypeScript implementation of the evolving W3C Shapes Constraint Language (SHACL)",
   "homepage": "https://bitbucket.org/vladimir_djurdjevic/shaclib.ts",
   "keywords": [
@@ -86,7 +86,7 @@
     "cli": "^1.0.1",
     "cli-color": "^1.2.0",
     "clui": "^0.3.1",
-    "rdflib-ts": "^1.2.3",
+    "rdflib-ts": "^1.2.4",
     "superagent": "^3.5.2",
     "uuid": "^3.0.1"
   }
