@@ -9,3 +9,7 @@ Sunday, May 7, 2017 - v1.0.1
 Tuesday, May 9, 2017 - v1.0.2
 ===========================================
 	* Updated RDFLib.ts to v1.2.4 
+
+Wednesday, May 9, 2017 - v1.0.3
+===========================================
+	* Updated RDFLib.ts to v1.2.5 
