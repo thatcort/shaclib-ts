@@ -1,3 +1,4 @@
+
 import { ConstraintComponent } from './constraint-component';
 import { InConstraintComponent } from './core/other/in-constraint-component';
 import { OrConstraintComponent } from './core/logical/or-constraint-component';
@@ -6,6 +7,8 @@ import { NotConstraintComponent } from './core/logical/not-constraint-component'
 import { NodeConstraintComponent } from './core/shape-based/node-constraint-component';
 import { XoneConstraintComponent } from './core/logical/xone-constraint-component';
 import { ClassConstraintComponent } from './core/value-type/class-constraint-component';
+import { SelectConstraintComponent } from './sparql/select-contraint-component';
+import { SparqlConstraintComponent } from './sparql/sparql-constraint-component';
 import { EqualsConstraintComponent } from './core/property-pair/equals-constraint-component';
 import { ClosedConstraintComponent } from './core/other/closed-constraint-component';
 import { IShaclConstraintParameter } from '../../model/shacl-constraint-parameter';
@@ -74,6 +77,9 @@ export class ConstraintComponentManager {
 		this.registerComponent(new ClassConstraintComponent());
 		this.registerComponent(new DatatypeConstraintComponent());
 		this.registerComponent(new NodeKindConstraintComponent());
+
+		this.registerComponent(new SparqlConstraintComponent());
+		this.registerComponent(new SelectConstraintComponent());
 	}
 
 	public registerComponent(component: ConstraintComponent) {

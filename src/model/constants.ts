@@ -149,4 +149,13 @@ export const LessThanParameterIRI: IRI = new IRI('sh:lessThan');
 
 export const LessThanOrEqualsComponentIRI: IRI = new IRI('sh:LessThanOrEqualsConstraintComponent');
 export const LessThanOrEqualsParameterIRI: IRI = new IRI('sh:lessThanOrEquals');
+
+export const SparqlComponentIRI: IRI = new IRI('sh:SPARQLConstraintComponent');
+export const SparqlParameterIRI: IRI = new IRI('sh:sparql');
+
+export const SelectComponentIRI: IRI = new IRI('sh:SelectConstraintComponent');
+export const AskComponentIRI: IRI = new IRI('sh:AskConstraintComponent');
+export const PrefixesParameterIRI: IRI = new IRI('sh:prefixes');
+export const SelectParameterIRI: IRI = new IRI('sh:select');
+export const AskParameterIRI: IRI = new IRI('sh:ask');
 /* ---------------------------------------------------------------------------------------- */

@@ -9,8 +9,8 @@
             "program": "${workspaceRoot}/src/cli/shacl-cli.ts",
             "cwd": "${workspaceRoot}/compiled",
             "args": [
-                "-s", "test/datasets/w3c/ttl/2_1_4_severity_example_shape_graph.ttl",
-                "-d", "test/datasets/w3c/ttl/2_1_4_severity_example_data_graph.ttl",
+                "-s", "test/datasets/w3c/ttl/5_1_sparql_based_constraint_shape_graph.ttl",
+                "-d", "test/datasets/w3c/ttl/5_1_sparql_based_constraint_data_graph.ttl",
                 "-r", "report.ts"
             ],
             "outFiles": ["${workspaceRoot}/compiled/**/*.js"],

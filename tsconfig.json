@@ -9,7 +9,9 @@
     "declaration": false,
     "rootDir": ".",
     "outDir": "compiled",
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["node_modules/@types"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true
   },
   "exclude": [
     "node_modules",

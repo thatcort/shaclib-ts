@@ -10,8 +10,8 @@ export class DisjointConstraintComponent extends ConstraintComponent {
 	}
 
 	public async validateAsync(shapes: ShaclShape[], sourceShape: ShaclShape, dataGraph: RdfStore, focusNode: NonBlankNode, valueNodes: RdfNode[], constraint: Map<string, any>): Promise<IShaclValidationResult[]> {
-		let validationResults: IShaclValidationResult[] = [];
-
+		let validationResults: IShaclValidationResult[] = []; 
+		
 		let disjointParam = constraint.get(DisjointParameterIRI.value);
 
 		let results = await dataGraph.queryAsync<ITripleQueryResult>(`

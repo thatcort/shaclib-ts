@@ -229,4 +229,14 @@ describe('SHACLib.ts', () => {
 			report.results.should.be.empty;
 		});
 	});
+
+	context('5.1 sh:sparql', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/5_1_sparql_based_constraint_shape_graph.ttl', 'test/datasets/w3c/ttl/5_1_sparql_based_constraint_data_graph.ttl');
+			report.results.should.have.lengthOf(1);
+
+			TestHelper.hasValidationResult(report, 'sh:SPARQLConstraintComponent', 'sh:Violation', 'ex:InvalidCountry').should.be.true;
+			TestHelper.hasValidationResult(report.results[0].details, 'sh:SelectConstraintComponent', 'sh:Violation', 'ex:InvalidCountry').should.be.true;
+		});
+	});
 });
