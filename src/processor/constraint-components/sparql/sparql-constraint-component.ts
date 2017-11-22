@@ -16,19 +16,17 @@ export class SparqlConstraintComponent extends ConstraintComponent {
 		let validationResults: IShaclValidationResult[] = [];
 
 		let sparqlShape = constraint.get(SparqlParameterIRI.value) as ShaclShape;
+		let validator = new ShaclValidator();
 
-		let selectConstraint: IShaclConstraint = sparqlShape.constraints.find(c => c.iri.value === SelectParameterIRI.value);
-		let askConstraint: IShaclConstraint = sparqlShape.constraints.find(c => c.iri.value === AskParameterIRI.value);
+		for (let valueNode of valueNodes) {
+			let results = await validator.validateShape(shapes, sparqlShape, dataGraph, [<NonBlankNode>valueNode]);
 
-		if (!selectConstraint && !askConstraint) {
-			throw new InvalidOperationError(`SparqlConstraintComponent '${sparqlShape.iri}' does not declare sh:select nor sh:ask constraint`);
+			if (results.length > 0) {
+				let validationResult = sourceShape.createValidationResult(focusNode, valueNode, this.iri);
+				validationResult.details = validationResult.details.concat(results);
+				validationResults.push(validationResult);
+			}
 		}
-		
-		let prefixValues: string[] = NamespaceManagerInstance.getAllNamespaces().map(ns => `PREFIX ${ns.prefix}: <${ns.value}>`);
-
-		let query = selectConstraint ? selectConstraint.value : askConstraint.value;
-
-		let query = `${prefixValues.join('\n')}${selectQuery.value.replace(/(SELECT.*?)\$this/g, '$1').replace(/\$this/g, focusNode.toString())}`;
 		
 		return validationResults;
 	}

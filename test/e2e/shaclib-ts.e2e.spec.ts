@@ -230,13 +230,26 @@ describe('SHACLib.ts', () => {
 		});
 	});
 
-	context('5.1 sh:sparql', () => {
+	context('5.1 sh:select', () => {
 		it('should produce one validation result', async () => {
 			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/5_1_sparql_based_constraint_shape_graph.ttl', 'test/datasets/w3c/ttl/5_1_sparql_based_constraint_data_graph.ttl');
 			report.results.should.have.lengthOf(1);
 
 			TestHelper.hasValidationResult(report, 'sh:SPARQLConstraintComponent', 'sh:Violation', 'ex:InvalidCountry').should.be.true;
 			TestHelper.hasValidationResult(report.results[0].details, 'sh:SelectConstraintComponent', 'sh:Violation', 'ex:InvalidCountry').should.be.true;
+		});
+	});
+
+	context('6.2.3.2 sh:ask', () => {
+		it('should produce one validation result', async () => {
+			let report = await TestHelper.runShaclValidator('test/datasets/w3c/ttl/6_2_3_2_ask_based_validators_shape_graph.ttl', 'test/datasets/w3c/ttl/6_2_3_2_ask_based_validators_data_graph.ttl');
+			report.results.should.have.lengthOf(2);
+
+			TestHelper.hasValidationResult(report, 'sh:SPARQLConstraintComponent', 'sh:Violation', 'ex:InvalidCountry').should.be.true;
+			TestHelper.hasValidationResult(report.results[0].details, 'sh:AskConstraintComponent', 'sh:Violation', 'Spain').should.be.true;
+
+			TestHelper.hasValidationResult(report, 'sh:SPARQLConstraintComponent', 'sh:Violation', 'ex:InvalidCountry1').should.be.true;
+			TestHelper.hasValidationResult(report.results[1].details, 'sh:AskConstraintComponent', 'sh:Violation', 'Spanija').should.be.true;
 		});
 	});
 });

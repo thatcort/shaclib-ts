@@ -1,19 +1,19 @@
 import { ShaclShape } from '../../../model/shacl-shape';
 import { ConstraintComponent } from '../constraint-component';
 import { IShaclValidationResult } from '../../../model/shacl-validation-report';
-import { SelectComponentIRI, SelectParameterIRI, PrefixesParameterIRI } from '../../../model/constants';
-import { BlankNode, IRI, ISparqlQueryResult, NonBlankNode, RdfNode, RdfStore, Literal, PlainLiteral, NamespaceManagerInstance, InvalidOperationError } from 'rdflib-ts';
+import { AskComponentIRI, AskParameterIRI, PrefixesParameterIRI } from '../../../model/constants';
+import { BlankNode, IRI, ISparqlQueryResult, NonBlankNode, RdfNode, RdfStore, Literal, PlainLiteral, NamespaceManagerInstance, InvalidOperationError, RdfObject } from 'rdflib-ts';
 
-export class SelectConstraintComponent extends ConstraintComponent {
+export class AskConstraintComponent extends ConstraintComponent {
 	public constructor() {
-		super(SelectComponentIRI, [{ iri: SelectParameterIRI }, { iri: PrefixesParameterIRI, optional: true, listTaking: true, shared: true }])
+		super(AskComponentIRI, [{ iri: AskParameterIRI }, { iri: PrefixesParameterIRI, optional: true, listTaking: true, shared: true }])
 	}
 
 	public async validateAsync(shapes: ShaclShape[], sourceShape: ShaclShape, dataGraph: RdfStore, focusNode: NonBlankNode, valueNodes: RdfNode[], constraint: Map<string, any>): Promise<IShaclValidationResult[]> {
 		let validationResults: IShaclValidationResult[] = [];
 
 		let prefixes: Literal[] = (constraint.get(PrefixesParameterIRI.value) as Literal[]) || [];
-		let selectQuery: PlainLiteral = constraint.get(SelectParameterIRI.value) as PlainLiteral;
+		let askQuery: PlainLiteral = constraint.get(AskParameterIRI.value) as PlainLiteral;
 
 		let unknownPrefixes = prefixes.filter(prefix => !NamespaceManagerInstance.getNamespaceByPrefix(prefix.value.replace(/:$/g, '')));
 		if (unknownPrefixes.length > 0) {
@@ -21,19 +21,15 @@ export class SelectConstraintComponent extends ConstraintComponent {
 		}
 
 		let prefixValues: string[] = NamespaceManagerInstance.getAllNamespaces().map(ns => `PREFIX ${ns.prefix}: <${ns.value}>`);
-		let query = `${prefixValues.join('\n')}${selectQuery.value.replace(/\$this/g, focusNode.toString())}`;
 
-		let result = await dataGraph.queryAsync<any>(query);
-
-		validationResults = validationResults.concat(result.results.bindings.map(b => {
-			let validationResult = sourceShape.createValidationResult(focusNode, b.value, this.iri);
-
-			if (!validationResult.resultPath) {
-				validationResult.resultPath = b.path;
+		for (let valueNode of valueNodes)  {
+			let query = `${prefixValues.join('\n')}${askQuery.value.replace(/\$value/g, valueNode.toString())}`;
+			
+			let result = await dataGraph.queryAsync<any>(query);
+			if (!result.boolean) {
+				validationResults.push(sourceShape.createValidationResult(focusNode, valueNode, this.iri));
 			}
-
-			return validationResult;
-		}));
+		}
 		
 		return validationResults; 
 	}

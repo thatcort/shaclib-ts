@@ -5,4 +5,5 @@ export interface IShaclConstraintParameter {
 	optional?: boolean;
 	shapeExpecting?: boolean;
 	listTaking?: boolean;
+	shared?: boolean;
 }

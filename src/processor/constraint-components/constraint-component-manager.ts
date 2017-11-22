@@ -32,6 +32,7 @@ import { MinInclusiveConstraintComponent } from './core/value-range/min-inclusiv
 import { PropertyShapeConstraintComponent } from './core/shape-based/property-shape-constraint-component';
 import { LessThanOrEqualsConstraintComponent } from './core/property-pair/less-than-or-equals-constraint-component';
 import { QualifiedValueShapeConstraintComponent } from './core/shape-based/qualified-value-shape-constraint-component';
+import { AskConstraintComponent } from './sparql/ask-constraint-component';
 
 export class ConstraintComponentManager {
 	private components: ConstraintComponent[];
@@ -80,6 +81,7 @@ export class ConstraintComponentManager {
 
 		this.registerComponent(new SparqlConstraintComponent());
 		this.registerComponent(new SelectConstraintComponent());
+		this.registerComponent(new AskConstraintComponent());
 	}
 
 	public registerComponent(component: ConstraintComponent) {

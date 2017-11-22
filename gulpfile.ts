@@ -45,6 +45,10 @@ gulp.task('copy-datasets', done => {
   return gulp.src('test/datasets/**/*.*').pipe(gulp.dest('compiled/test/datasets'))
 });
 
+gulp.task('copy-3rdparty', done => {
+    return gulp.src('test/3rdParty/**/*.*').pipe(gulp.dest('compiled/test/3rdParty'))
+  });
+
 let tsProject = typescript.createProject('tsconfig.json');
 gulp.task('compile', () => {
     return merge([

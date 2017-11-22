@@ -13,3 +13,7 @@ Tuesday, May 9, 2017 - v1.0.2
 Wednesday, May 9, 2017 - v1.0.3
 ===========================================
 	* Updated RDFLib.ts to v1.2.5 
+
+Wednesday, November 22, 2017 - v1.1.0
+===========================================
+	* Added sparql constraint support for sh:select and sh:ask

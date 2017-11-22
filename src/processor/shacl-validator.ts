@@ -6,6 +6,7 @@ import { CommonConstraintComponentManager } from './constraint-components/constr
 import { IShaclValidationResult, ShaclValidationReport } from '../model/shacl-validation-report';
 import { ITripleQueryResult, NonBlankNode, RdfFactory, RdfNode, RdfStore } from 'rdflib-ts';
 import { IRI, ISparqlQueryResult, ISparqlQueryResultBinding, BlankNode, RdfTerm } from 'rdflib-ts';
+import { IShaclConstraint } from '../model/shacl-constraint';
 
 export interface IShaclValidationOptions {
 }
@@ -152,7 +153,14 @@ export class ShaclValidator {
 	private buildConstraintComponentMap(shape: ShaclShape): Map<ConstraintComponent, Map<string, any>[]> {
 		let constraintComponentMap = new Map<ConstraintComponent, Map<string, any>[]>();
 
+		let sharedConstraints: IShaclConstraint[] = [];
 		for (let constraint of shape.constraints) {
+			let parameter = CommonConstraintComponentManager.getConstraintParameterByIRI(constraint.iri);
+			if (parameter.shared) {
+				sharedConstraints.push(constraint);
+				continue;
+			}
+
 			let component = CommonConstraintComponentManager.getConstraintComponentByParameter(constraint.iri);
 
 			if (!constraintComponentMap.has(component)) {
@@ -167,6 +175,25 @@ export class ShaclValidator {
 				parameterMaps.push(constraintMap);
 			} else {
 				parameterMaps[0].set(constraint.iri.value, constraint.value);
+			}
+		}
+
+		for (let sharedConstraint of sharedConstraints) {
+			for (let entry of constraintComponentMap.entries()) {
+				let component = entry[0];
+				let parameterMaps = entry[1];
+
+				if (!component.parameters.some(p => p.iri.value === sharedConstraint.iri.value)) {
+					continue;
+				}
+			
+				if (component.parameters.length === 1 || parameterMaps.length === 0) {
+					let constraintMap = new Map<string, any>();
+					constraintMap.set(sharedConstraint.iri.value, sharedConstraint.value);
+					parameterMaps.push(constraintMap);
+				} else {
+					parameterMaps[0].set(sharedConstraint.iri.value, sharedConstraint.value);
+				}
 			}
 		}
 
