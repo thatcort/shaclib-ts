@@ -1,6 +1,6 @@
 {
   "name": "shaclib-ts",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "TypeScript implementation of the evolving W3C Shapes Constraint Language (SHACL)",
   "homepage": "https://bitbucket.org/vladimir_djurdjevic/shaclib.ts",
   "keywords": [
