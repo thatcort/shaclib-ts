@@ -56,30 +56,10 @@ let exporter = new RdfDataExporter({ unskolemize: true });
 await exporter.exportRdfDataAsync(report.toNQuads(), 'report.ttl');
 ```
 
-
-
-## Development
----
-
-What if I want to contribute? Great! If you are using Visual Studio Code, there is default development setup in .vscode folder. 
-There are preconfigured tasks for compile, test and build, and default launch configuration with main.ts as entry point, and compile as pre-launch task. 
-Be aware that a working directory when debugging is not the project root, but the compiled directory (directory where compiled .js files reside). 
-There is also a keybindings.json file with custom bindings which you can copy to your local keybinding.json file (File -> Preferences -> Keyboard Shortcuts).
-After the code is cloned, run `npm install` to install dependencies, followed by `npm run link` to build library and link library locally for test purposes.
-
 ## Testing
 ---
 
 To run all tests, run `npm test` command. Different tests can be run separately with `npm run test:unit`, `npm run test:integration` and `npm run test:e2e` commands. 
-
-## Todos
----
-
- - Add ill-formed shapes handling
- - Systematically test via test case library
- - Reach 100% code coverage
- - Write JSDoc
- - Make it browser friendly
 
 License
 ----

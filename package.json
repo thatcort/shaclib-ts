@@ -2,7 +2,7 @@
   "name": "shaclib-ts",
   "version": "1.1.1",
   "description": "TypeScript implementation of the evolving W3C Shapes Constraint Language (SHACL)",
-  "homepage": "https://bitbucket.org/vladimir_djurdjevic/shaclib.ts",
+  "homepage": "https://github.com/vladimirdjurdjevic/shaclib-ts",
   "keywords": [
     "rdf",
     "sparql",
@@ -11,12 +11,12 @@
   "author": "Vladimir Djurdjevic <vladimirdjurdjevic93@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://bitbucket.org/vladimir_djurdjevic/shaclib.ts/issues",
+    "url": "https://github.com/vladimirdjurdjevic/shaclib-ts/issues",
     "email": "vladimirdjurdjevic93@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://vladimir_djurdjevic@bitbucket.org/vladimir_djurdjevic/shaclib.ts.git"
+    "url": "https://github.com/vladimirdjurdjevic/shaclib-ts.git"
   },
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
