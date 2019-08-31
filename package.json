@@ -21,11 +21,11 @@
 		"dev": "tsc -w --preserveWatchOutput",
 		"lint": "eslint \"{test,src}/**/*.ts\"",
 		"build": "tsc",
-		"rebuild": "yarn run clean && yarn run build",
-		"prepublish": "yarn run lint && yarn run rebuild",
+		"rebuild": "npm run clean && npm run build",
+		"prepublish": "npm run lint && npm run rebuild",
 		"start:fuseki": "docker run -p 3030:3030 -e ADMIN_PASSWORD=pass123 stain/jena-fuseki:2.5.0",
 		"start:tests": "env-cmd -f ./.env/qa.env mocha \"test/**/*.spec.ts\"",
-		"test": "concurrently -s first -k -n Fuseki,Tests \"yarn run start:fuseki\" \"wait-port 3030 && yarn run start:tests\""
+		"test": "concurrently -s first -k -n Fuseki,Tests \"npm run start:fuseki\" \"wait-port 3030 && npm run start:tests\""
 	},
 	"devDependencies": {
 		"@dry-stack/devtools": "2.0.5",
