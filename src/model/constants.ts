@@ -78,7 +78,6 @@ export const NodeKindBlankNodeOrIRIValueIRI: IRI = new IRI('sh:BlankNodeOrIRI');
 export const NodeKindBlankNodeOrLiteralValueIRI: IRI = new IRI('sh:BlankNodeOrLiteral');
 export const NodeKindIRIOrLiteralValueIRI: IRI = new IRI('sh:IRIOrLiteral');
 
-
 export const PatternComponentIRI: IRI = new IRI('sh:PatternConstraintComponent');
 export const PatternParameterIRI: IRI = new IRI('sh:pattern');
 export const FlagsParameterIRI: IRI = new IRI('sh:flags');
@@ -132,9 +131,13 @@ export const InParameterIRI: IRI = new IRI('sh:in');
 export const NodeComponentIRI: IRI = new IRI('sh:NodeConstraintComponent');
 export const NodeParameterIRI: IRI = new IRI('sh:node');
 
-export const QualifiedValueShapeComponentIRI: IRI = new IRI('sh:QualifiedValueShapeConstraintComponent');
+export const QualifiedValueShapeComponentIRI: IRI = new IRI(
+	'sh:QualifiedValueShapeConstraintComponent'
+);
 export const QualifiedValueShapeParameterIRI: IRI = new IRI('sh:qualifiedValueShape');
-export const QualifiedValueShapesDisjointParameterIRI: IRI = new IRI('sh:qualifiedValueShapesDisjoint');
+export const QualifiedValueShapesDisjointParameterIRI: IRI = new IRI(
+	'sh:qualifiedValueShapesDisjoint'
+);
 export const QualifiedMinCountParameterIRI: IRI = new IRI('sh:qualifiedMinCount');
 export const QualifiedMaxCountParameterIRI: IRI = new IRI('sh:qualifiedMaxCount');
 

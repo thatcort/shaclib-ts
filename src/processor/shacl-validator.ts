@@ -3,59 +3,88 @@ import { ShaclPropertyShape } from '../model/shacl-property-shape';
 import { ConstraintComponent } from './constraint-components/constraint-component';
 import { RdfsSubClassOfIRI, RdfTypeIRI } from '../model/constants';
 import { CommonConstraintComponentManager } from './constraint-components/constraint-component-manager';
-import { IShaclValidationResult, ShaclValidationReport } from '../model/shacl-validation-report';
-import { ITripleQueryResult, NonBlankNode, RdfFactory, RdfNode, RdfStore } from 'rdflib-ts';
-import { IRI, ISparqlQueryResult, ISparqlQueryResultBinding, BlankNode, RdfTerm } from 'rdflib-ts';
-import { IShaclConstraint } from '../model/shacl-constraint';
+import { ShaclValidationResult, ShaclValidationReport } from '../model/shacl-validation-report';
+import {
+	TripleQueryResult,
+	NonBlankNode,
+	RdfFactory,
+	RdfNode,
+	RdfStore,
+	SparqlQueryResultBinding
+} from 'rdflib-ts';
+import { IRI } from 'rdflib-ts';
+import { ShaclConstraint } from '../model/shacl-constraint';
 
-export interface IShaclValidationOptions {
-}
-
-export interface IFocusNodeQueryResult {
-	focusNode: ISparqlQueryResultBinding
+export interface FocusNodeQueryResult {
+	focusNode: SparqlQueryResultBinding;
 }
 
 export class ShaclValidator {
-	public readonly options: IShaclValidationOptions;
+	public readonly options: any;
 
-	public constructor(options: IShaclValidationOptions = {}) {
+	public constructor(options = {}) {
 		this.options = Object.assign({}, {}, options);
 	}
 
-	public async validateAsync(shapes: ShaclShape[], dataGraph: RdfStore): Promise<ShaclValidationReport> {
-		let report = new ShaclValidationReport();
+	public async validateAsync(
+		shapes: ShaclShape[],
+		dataGraph: RdfStore
+	): Promise<ShaclValidationReport> {
+		const report = new ShaclValidationReport();
 
-		for (let shape of shapes) {
+		for (const shape of shapes) {
 			if (!shape.isChildShape && !shape.deactivated) {
-				let results = await this.validateShape(shapes, shape, dataGraph);
+				const results = await this.validateShape(shapes, shape, dataGraph);
 				report.results = report.results.concat(results);
 			}
 		}
 
-		report.conforms = !report.results.some(r => /violation/gi.test(r.resultSeverity.relativeValue));
+		report.conforms = !report.results.some(r =>
+			/violation/gi.test(r.resultSeverity.relativeValue)
+		);
 		return report;
 	}
 
-	public async validateShape(shapes: ShaclShape[], shape: ShaclShape, dataGraph: RdfStore, focusNodes?: NonBlankNode[]): Promise<IShaclValidationResult[]> {
-		let validationResults: IShaclValidationResult[] = [];
+	public async validateShape(
+		shapes: ShaclShape[],
+		shape: ShaclShape,
+		dataGraph: RdfStore,
+		focusNodes?: NonBlankNode[]
+	): Promise<ShaclValidationResult[]> {
+		let validationResults: ShaclValidationResult[] = [];
 
 		if (!focusNodes) {
 			focusNodes = await this.resolveFocusNodes(shape, dataGraph);
 		}
 
-		let constraintComponentMap = this.buildConstraintComponentMap(shape);
+		const constraintComponentMap = this.buildConstraintComponentMap(shape);
 
-		for (let focusNode of focusNodes) {
+		for (const focusNode of focusNodes) {
+			const valueNodes =
+				shape instanceof ShaclPropertyShape
+					? await this.resolveValueNodes(
+							focusNode,
+							shape.path.sparqlPathString,
+							dataGraph
+					  )
+					: [focusNode];
 
-			let valueNodes = shape instanceof ShaclPropertyShape ? await this.resolveValueNodes(focusNode, shape.path.sparqlPathString, dataGraph) : [focusNode];
-
-			for (let component of constraintComponentMap.entries()) {
+			for (const component of constraintComponentMap.entries()) {
 				let results = [];
 
-				for (let constraint of component[1]) {
-					results = results.concat(await component[0].validateAsync(shapes, shape, dataGraph, focusNode, valueNodes, constraint));
+				for (const constraint of component[1]) {
+					results = results.concat(
+						await component[0].validateAsync(
+							shapes,
+							shape,
+							dataGraph,
+							focusNode,
+							valueNodes,
+							constraint
+						)
+					);
 				}
-				
+
 				validationResults = validationResults.concat(results);
 			}
 		}
@@ -63,44 +92,74 @@ export class ShaclValidator {
 		return validationResults;
 	}
 
-	private async resolveFocusNodes(shape: ShaclShape, dataGraph: RdfStore): Promise<NonBlankNode[]> {
+	private async resolveFocusNodes(
+		shape: ShaclShape,
+		dataGraph: RdfStore
+	): Promise<NonBlankNode[]> {
 		let focusNodes = [].concat(shape.targetNodes);
 
 		if (shape.targetClasses.length > 0) {
-			let targetClassQuery = this.buildTargetClassQuery(shape.targetClasses);
-			let targetClassQueryResults = await dataGraph.queryAsync<IFocusNodeQueryResult>(targetClassQuery);
+			const targetClassQuery = this.buildTargetClassQuery(shape.targetClasses);
+			const targetClassQueryResults = await dataGraph.queryAsync<FocusNodeQueryResult>(
+				targetClassQuery
+			);
 
-			focusNodes = focusNodes.concat(targetClassQueryResults.results.bindings.map(r => RdfFactory.createRdfTermFromSparqlResultBinding(r.focusNode)));
+			focusNodes = focusNodes.concat(
+				targetClassQueryResults.results.bindings.map(r =>
+					RdfFactory.createRdfTermFromSparqlResultBinding(r.focusNode)
+				)
+			);
 		}
 
-
 		if (shape.targetSubjectsOf.length > 0) {
-			let targetSubjectsOfQuery = this.buildTargetSubjectsOfQuery(shape.targetSubjectsOf);
-			let targetSubjectsOfQueryResults = await dataGraph.queryAsync<IFocusNodeQueryResult>(targetSubjectsOfQuery);
+			const targetSubjectsOfQuery = this.buildTargetSubjectsOfQuery(shape.targetSubjectsOf);
+			const targetSubjectsOfQueryResults = await dataGraph.queryAsync<FocusNodeQueryResult>(
+				targetSubjectsOfQuery
+			);
 
-			focusNodes = focusNodes.concat(targetSubjectsOfQueryResults.results.bindings.map(r => RdfFactory.createRdfTermFromSparqlResultBinding(r.focusNode)));
+			focusNodes = focusNodes.concat(
+				targetSubjectsOfQueryResults.results.bindings.map(r =>
+					RdfFactory.createRdfTermFromSparqlResultBinding(r.focusNode)
+				)
+			);
 		}
 
 		if (shape.targetObjectsOf.length > 0) {
-			let targetObjectsOfQuery = this.buildTargetObjectsOfQuery(shape.targetObjectsOf);
-			let targetObjectsOfQueryResults = await dataGraph.queryAsync<IFocusNodeQueryResult>(targetObjectsOfQuery);
+			const targetObjectsOfQuery = this.buildTargetObjectsOfQuery(shape.targetObjectsOf);
+			const targetObjectsOfQueryResults = await dataGraph.queryAsync<FocusNodeQueryResult>(
+				targetObjectsOfQuery
+			);
 
-			focusNodes = focusNodes.concat(targetObjectsOfQueryResults.results.bindings.map(r => RdfFactory.createRdfTermFromSparqlResultBinding(r.focusNode)));
+			focusNodes = focusNodes.concat(
+				targetObjectsOfQueryResults.results.bindings.map(r =>
+					RdfFactory.createRdfTermFromSparqlResultBinding(r.focusNode)
+				)
+			);
 		}
 
 		return focusNodes;
 	}
 
-	private async resolveValueNodes(focusNode: NonBlankNode, path: string, dataGraph: RdfStore): Promise<RdfNode[]> {
-		let valueNodesQuery = this.buildValueNodesQuery(focusNode, path);
-		let valueNodesQueryResults = await dataGraph.queryAsync<ITripleQueryResult>(valueNodesQuery);
+	private async resolveValueNodes(
+		focusNode: NonBlankNode,
+		path: string,
+		dataGraph: RdfStore
+	): Promise<RdfNode[]> {
+		const valueNodesQuery = this.buildValueNodesQuery(focusNode, path);
+		const valueNodesQueryResults = await dataGraph.queryAsync<TripleQueryResult>(
+			valueNodesQuery
+		);
 
-		return valueNodesQueryResults.results.bindings.map(r => RdfFactory.createRdfTermFromSparqlResultBinding(r.object));
+		return valueNodesQueryResults.results.bindings.map(r =>
+			RdfFactory.createRdfTermFromSparqlResultBinding(r.object)
+		);
 	}
 
 	private buildTargetClassQuery(targetClasses: IRI[]): string {
-
-		let filter = targetClasses.length > 0 ? `filter(?targetClass = ${targetClasses.join(' || ?targetClass = ')})` : '';
+		const filter =
+			targetClasses.length > 0
+				? `filter(?targetClass = ${targetClasses.join(' || ?targetClass = ')})`
+				: '';
 
 		return `
 			SELECT DISTINCT ?focusNode 
@@ -113,8 +172,10 @@ export class ShaclValidator {
 	}
 
 	private buildTargetSubjectsOfQuery(targetSubjectsOf: IRI[]): string {
-
-		let filter = targetSubjectsOf.length > 0 ? `filter(?predicate = ${targetSubjectsOf.join(' || ?predicate = ')})` : '';
+		const filter =
+			targetSubjectsOf.length > 0
+				? `filter(?predicate = ${targetSubjectsOf.join(' || ?predicate = ')})`
+				: '';
 
 		return `
 			SELECT DISTINCT ?focusNode 
@@ -127,8 +188,10 @@ export class ShaclValidator {
 	}
 
 	private buildTargetObjectsOfQuery(targetObjectsOf: IRI[]): string {
-
-		let filter = targetObjectsOf.length > 0 ? `filter(?predicate = ${targetObjectsOf.join(' || ?predicate = ')})` : '';
+		const filter =
+			targetObjectsOf.length > 0
+				? `filter(?predicate = ${targetObjectsOf.join(' || ?predicate = ')})`
+				: '';
 
 		return `
 			SELECT DISTINCT ?focusNode 
@@ -150,27 +213,33 @@ export class ShaclValidator {
 		`;
 	}
 
-	private buildConstraintComponentMap(shape: ShaclShape): Map<ConstraintComponent, Map<string, any>[]> {
-		let constraintComponentMap = new Map<ConstraintComponent, Map<string, any>[]>();
+	private buildConstraintComponentMap(
+		shape: ShaclShape
+	): Map<ConstraintComponent, Map<string, any>[]> {
+		const constraintComponentMap = new Map<ConstraintComponent, Map<string, any>[]>();
 
-		let sharedConstraints: IShaclConstraint[] = [];
-		for (let constraint of shape.constraints) {
-			let parameter = CommonConstraintComponentManager.getConstraintParameterByIRI(constraint.iri);
+		const sharedConstraints: ShaclConstraint[] = [];
+		for (const constraint of shape.constraints) {
+			const parameter = CommonConstraintComponentManager.getConstraintParameterByIRI(
+				constraint.iri
+			);
 			if (parameter.shared) {
 				sharedConstraints.push(constraint);
 				continue;
 			}
 
-			let component = CommonConstraintComponentManager.getConstraintComponentByParameter(constraint.iri);
+			const component = CommonConstraintComponentManager.getConstraintComponentByParameter(
+				constraint.iri
+			);
 
 			if (!constraintComponentMap.has(component)) {
 				constraintComponentMap.set(component, []);
 			}
 
-			let parameterMaps = constraintComponentMap.get(component);
-			
+			const parameterMaps = constraintComponentMap.get(component);
+
 			if (component.parameters.length === 1 || parameterMaps.length === 0) {
-				let constraintMap = new Map<string, any>();
+				const constraintMap = new Map<string, any>();
 				constraintMap.set(constraint.iri.value, constraint.value);
 				parameterMaps.push(constraintMap);
 			} else {
@@ -178,17 +247,17 @@ export class ShaclValidator {
 			}
 		}
 
-		for (let sharedConstraint of sharedConstraints) {
-			for (let entry of constraintComponentMap.entries()) {
-				let component = entry[0];
-				let parameterMaps = entry[1];
+		for (const sharedConstraint of sharedConstraints) {
+			for (const entry of constraintComponentMap.entries()) {
+				const component = entry[0];
+				const parameterMaps = entry[1];
 
 				if (!component.parameters.some(p => p.iri.value === sharedConstraint.iri.value)) {
 					continue;
 				}
-			
+
 				if (component.parameters.length === 1 || parameterMaps.length === 0) {
-					let constraintMap = new Map<string, any>();
+					const constraintMap = new Map<string, any>();
 					constraintMap.set(sharedConstraint.iri.value, sharedConstraint.value);
 					parameterMaps.push(constraintMap);
 				} else {

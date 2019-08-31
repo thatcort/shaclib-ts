@@ -1,6 +1,6 @@
 import { IRI } from 'rdflib-ts';
 
-export interface IShaclConstraint {
+export interface ShaclConstraint {
 	iri: IRI;
 	value: any;
 }

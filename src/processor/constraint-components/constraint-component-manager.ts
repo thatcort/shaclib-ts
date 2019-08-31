@@ -1,4 +1,3 @@
-
 import { ConstraintComponent } from './constraint-component';
 import { InConstraintComponent } from './core/other/in-constraint-component';
 import { OrConstraintComponent } from './core/logical/or-constraint-component';
@@ -11,8 +10,8 @@ import { SelectConstraintComponent } from './sparql/select-contraint-component';
 import { SparqlConstraintComponent } from './sparql/sparql-constraint-component';
 import { EqualsConstraintComponent } from './core/property-pair/equals-constraint-component';
 import { ClosedConstraintComponent } from './core/other/closed-constraint-component';
-import { IShaclConstraintParameter } from '../../model/shacl-constraint-parameter';
-import { IRI, InvalidOperationError } from 'rdflib-ts';
+import { ShaclConstraintParameter } from '../../model/shacl-constraint-parameter';
+import { IRI } from 'rdflib-ts';
 import { PatternConstraintComponent } from './core/string-based/pattern-constraint-component';
 import { DatatypeConstraintComponent } from './core/value-type/datatype-constraint-component';
 import { MinCountConstraintComponent } from './core/cardinality/min-count-constraint-component';
@@ -89,17 +88,21 @@ export class ConstraintComponentManager {
 	}
 
 	public getConstraintComponentByParameter(parameterIRI: IRI): ConstraintComponent {
-		return this.components.find(c => c.parameters.some(p => p.iri.value === parameterIRI.value));
+		return this.components.find(c =>
+			c.parameters.some(p => p.iri.value === parameterIRI.value)
+		);
 	}
 
-	public getConstraintParameterByIRI(parameterIRI: IRI): IShaclConstraintParameter {
-		return this.getConstraintComponentByParameter(parameterIRI).parameters.find(p => p.iri.value === parameterIRI.value);
+	public getConstraintParameterByIRI(parameterIRI: IRI): ShaclConstraintParameter {
+		return this.getConstraintComponentByParameter(parameterIRI).parameters.find(
+			p => p.iri.value === parameterIRI.value
+		);
 	}
 
-	public getAllConstraintParameters(): IShaclConstraintParameter[] {
+	public getAllConstraintParameters(): ShaclConstraintParameter[] {
 		let parameters = [];
 
-		for (let component of this.components) {
+		for (const component of this.components) {
 			parameters = parameters.concat(component.parameters);
 		}
 

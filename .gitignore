@@ -1,6 +1,38 @@
-compiled/
-coverage/
-lib/
-node_modules/
+# compiled output
+**/dist
+/tmp
+**/out-tsc
+
+# dependencies
+**/node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
 .nyc_output/
-test/3rdParty/apache-jena-fuseki-2.5.0/run/
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+.cache-loader
+lerna-debug.log
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Firebase
+**/.firebase
+**/.runtimeconfig.json
+firebase-debug.log

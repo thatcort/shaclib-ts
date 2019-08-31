@@ -1,25 +1,33 @@
 import { ShaclShape } from '../../../../model/shacl-shape';
-import { ShaclPropertyShape } from '../../../../model/shacl-property-shape';
 import { ConstraintComponent } from '../../constraint-component';
-import { IShaclValidationResult } from '../../../../model/shacl-validation-report';
+import { ShaclValidationResult } from '../../../../model/shacl-validation-report';
 import { HasValueComponentIRI, HasValueParameterIRI } from '../../../../model/constants';
-import { ITripleQueryResult, Literal, NonBlankNode, RdfFactory, RdfNode, RdfStore } from 'rdflib-ts';
-import { ISparqlQueryResultBinding, RdfTerm, BlankNode, InvalidOperationError, IRI, ISparqlQueryResult } from 'rdflib-ts';
+import { NonBlankNode, RdfNode, RdfStore } from 'rdflib-ts';
+import { RdfTerm } from 'rdflib-ts';
 
 export class HasValueConstraintComponent extends ConstraintComponent {
 	public constructor() {
-		super(HasValueComponentIRI, [{ iri: HasValueParameterIRI }])
+		super(HasValueComponentIRI, [{ iri: HasValueParameterIRI }]);
 	}
 
-	public async validateAsync(shapes: ShaclShape[], sourceShape: ShaclShape, dataGraph: RdfStore, focusNode: NonBlankNode, valueNodes: RdfNode[], constraint: Map<string, any>): Promise<IShaclValidationResult[]> {
-		let validationResults: IShaclValidationResult[] = [];
+	public async validateAsync(
+		shapes: ShaclShape[],
+		sourceShape: ShaclShape,
+		dataGraph: RdfStore,
+		focusNode: NonBlankNode,
+		valueNodes: RdfNode[],
+		constraint: Map<string, any>
+	): Promise<ShaclValidationResult[]> {
+		const validationResults: ShaclValidationResult[] = [];
 
-		let targetValue = constraint.get(HasValueParameterIRI.value) as RdfTerm;
+		const targetValue = constraint.get(HasValueParameterIRI.value) as RdfTerm;
 
 		if (!valueNodes.some(vn => vn.toString() === targetValue.toString())) {
-			validationResults.push(sourceShape.createValidationResult(focusNode, targetValue, this.iri));
+			validationResults.push(
+				sourceShape.createValidationResult(focusNode, targetValue, this.iri)
+			);
 		}
 
 		return validationResults;
 	}
-} 
+}

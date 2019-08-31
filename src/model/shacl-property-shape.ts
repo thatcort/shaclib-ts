@@ -1,17 +1,17 @@
 import { ShaclShape } from './shacl-shape';
-import { IShaclValidationResult } from './shacl-validation-report';
+import { ShaclValidationResult } from './shacl-validation-report';
 import { IRI, NonBlankNode, RdfTerm } from 'rdflib-ts';
 
-export interface IShaclPropertyPath {
+export interface ShaclPropertyPath {
 	pathType: string,
 	pathValue: IRI,
 	sparqlPathString: string
 }
 
 export class ShaclPropertyShape extends ShaclShape {
-	public path: IShaclPropertyPath;
+	public path: ShaclPropertyPath;
 
-	public constructor(iri: IRI, path?: IShaclPropertyPath) {
+	public constructor(iri: IRI, path?: ShaclPropertyPath) {
 		super(iri);
 		this.path = {
 			pathType: null,
@@ -20,8 +20,8 @@ export class ShaclPropertyShape extends ShaclShape {
 		};
 	}
 
-	public createValidationResult(focusNode: NonBlankNode, value?: RdfTerm, sourceConstraintComponent?: IRI): IShaclValidationResult {
-		let result = super.createValidationResult(focusNode, value, sourceConstraintComponent);
+	public createValidationResult(focusNode: NonBlankNode, value?: RdfTerm, sourceConstraintComponent?: IRI): ShaclValidationResult {
+		const result = super.createValidationResult(focusNode, value, sourceConstraintComponent);
 		result.resultPath = this.path.pathValue;
 
 		return result;

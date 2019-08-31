@@ -1,22 +1,16 @@
-import 'mocha';
-import * as chai from 'chai';
-
-let should = chai.should();
-
 import { RestDBMSAdapter } from '../../../../../../src/utils/dbms/adapters/rest/rest-dbms-adapter';
 
 describe('RestDBMSAdapter - Unit', () => {
 	context('constructor', () => {
 		it('should set dbmsName, dbmsVersion and options properties', () => {
-			let restAdapter = new RestDBMSAdapter('Some DBMS', '1.0.0',
-				{
-					contentType: 'application/json',
-					dbmsBaseUrl: 'http://localhost:3030',
-					storeAccessEndpoint: '$',
-					storeManagementEndpoint: '',
-					storeNameParameter: { name: 'dbName' },
-					storeTypeParameter: { name: 'dbType', type: 'mem' }
-				});
+			const restAdapter = new RestDBMSAdapter('Some DBMS', '1.0.0', {
+				contentType: 'application/json',
+				dbmsBaseUrl: 'http://localhost:3030',
+				storeAccessEndpoint: '$',
+				storeManagementEndpoint: '',
+				storeNameParameter: { name: 'dbName' },
+				storeTypeParameter: { name: 'dbType', type: 'mem' }
+			});
 
 			restAdapter.dbmsName.should.equal('Some DBMS');
 			restAdapter.dbmsVersion.should.equal('1.0.0');

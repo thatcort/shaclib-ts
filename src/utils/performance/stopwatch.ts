@@ -10,7 +10,7 @@ export class Stopwatch {
 	}
 
 	public elapsed(): string {
-		let duration = process.hrtime(this.startTime);
+		const duration = process.hrtime(this.startTime);
 		return `${Math.round(duration[0] * 1e3 + duration[1] * 1e-6)}ms`;
 	}
 }

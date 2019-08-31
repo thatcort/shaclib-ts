@@ -3,36 +3,38 @@ import * as http from 'superagent';
 import { RdfDBMSAdapter } from '../rdf-dbms-adapter';
 import { RdfStore, RemoteSparqlEndpoint } from 'rdflib-ts';
 
-export interface IStoreNameParameter {
+export interface StoreNameParameter {
 	name: string;
 }
 
-export interface IStoreTypeParameter {
+export interface StoreTypeParameter {
 	name: string;
 	type: string;
 }
 
-export interface IRestDBMSAdapterOptions {
+export interface RestDBMSAdapterOptions {
 	dbmsBaseUrl: string;
 	storeManagementEndpoint: string;
 	storeAccessEndpoint: string;
 	contentType: string;
-	storeNameParameter: IStoreNameParameter;
-	storeTypeParameter?: IStoreTypeParameter;
+	storeNameParameter: StoreNameParameter;
+	storeTypeParameter?: StoreTypeParameter;
 }
 
 export class RestDBMSAdapter extends RdfDBMSAdapter {
-	public options: IRestDBMSAdapterOptions;
+	public options: RestDBMSAdapterOptions;
 
-	public constructor(dbmsName: string, dbmsVersion: string, options: IRestDBMSAdapterOptions) {
+	public constructor(dbmsName: string, dbmsVersion: string, options: RestDBMSAdapterOptions) {
 		super(dbmsName, dbmsVersion);
 		this.options = options;
 	}
 
 	public async createRdfStoreAsync(storeName: string): Promise<RdfStore> {
-		await http.post(`${this.options.storeManagementEndpoint}`)
-				  .send(this.createRequestBody(storeName))
-				  .set('Content-Type', this.options.contentType);
+		await http
+			.post(`${this.options.storeManagementEndpoint}`)
+			.auth(process.env.STORE_USER, process.env.STORE_PASS)
+			.send(this.createRequestBody(storeName))
+			.set('Content-Type', this.options.contentType);
 
 		return new RemoteSparqlEndpoint(storeName, `${this.options.storeAccessEndpoint}`);
 	}
@@ -42,11 +44,13 @@ export class RestDBMSAdapter extends RdfDBMSAdapter {
 			return;
 		}
 
-		await http.delete(`${this.options.storeManagementEndpoint}/${store.storeName}`);
+		await http
+			.delete(`${this.options.storeManagementEndpoint}/${store.storeName}`)
+			.auth(process.env.STORE_USER, process.env.STORE_PASS);
 	}
 
 	private createRequestBody(storeName: string): any {
-		let body: any = {};
+		const body: any = {};
 		body[this.options.storeNameParameter.name] = storeName;
 
 		if (this.options.storeTypeParameter) {

@@ -1,36 +1,14 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-           "type": "node",
-            "request": "launch",
-            "name": "Debug cli",
-            "preLaunchTask": "compile",
-            "program": "${workspaceRoot}/src/cli/shacl-cli.ts",
-            "cwd": "${workspaceRoot}/compiled",
-            "args": [
-                "-s", "test/datasets/w3c/ttl/5_1_sparql_based_constraint_shape_graph.ttl",
-                "-d", "test/datasets/w3c/ttl/5_1_sparql_based_constraint_data_graph.ttl",
-                "-r", "report.ts"
-            ],
-            "outFiles": ["${workspaceRoot}/compiled/**/*.js"],
-            "sourceMaps": true,
-            "runtimeArgs": [
-                "--no-deprecation"
-            ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Debug main",
-            "preLaunchTask": "compile",
-            "program": "${workspaceRoot}/src/main.ts",
-            "cwd": "${workspaceRoot}/compiled",
-            "outFiles": ["${workspaceRoot}/compiled/**/*.js"],
-            "sourceMaps": true,
-            "runtimeArgs": [
-                "--no-deprecation"
-            ]
-        }
-    ]
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug Script",
+			"args": ["${file}"],
+			"cwd": "${workspaceRoot}",
+			"runtimeArgs": ["-r", "ts-node/register", "-r", "tsconfig-paths/register"],
+			"envFile": "${workspaceFolder}/.env/dev.env"
+		}
+	]
 }

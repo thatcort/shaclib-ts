@@ -1,7 +1,7 @@
-import { IShaclConstraint } from './shacl-constraint';
+import { ShaclConstraint } from './shacl-constraint';
 import { ViolationSeverityIRI } from './constants';
-import { IShaclValidationResult } from './shacl-validation-report';
-import { IRI, BlankNode, Literal, NonBlankNode, RdfFactory, RdfTerm } from 'rdflib-ts';
+import { ShaclValidationResult } from './shacl-validation-report';
+import { IRI, BlankNode, Literal, NonBlankNode, RdfTerm } from 'rdflib-ts';
 
 export abstract class ShaclShape {
 	public iri: IRI;
@@ -10,11 +10,10 @@ export abstract class ShaclShape {
 	public targetNodes: NonBlankNode[];
 	public targetObjectsOf: IRI[];
 	public targetSubjectsOf: IRI[];
-	public constraints: IShaclConstraint[];
+	public constraints: ShaclConstraint[];
 	public deactivated: boolean;
 	public messages: Literal[];
 	public severity: IRI;
-
 
 	public constructor(iri: IRI) {
 		this.iri = iri;
@@ -29,7 +28,11 @@ export abstract class ShaclShape {
 		this.severity = ViolationSeverityIRI;
 	}
 
-	public createValidationResult(focusNode: NonBlankNode, value?: RdfTerm, sourceConstraintComponent?: IRI): IShaclValidationResult {
+	public createValidationResult(
+		focusNode: NonBlankNode,
+		value?: RdfTerm,
+		sourceConstraintComponent?: IRI
+	): ShaclValidationResult {
 		return {
 			resultId: new BlankNode(),
 			focusNode: focusNode,
@@ -39,6 +42,6 @@ export abstract class ShaclShape {
 			sourceShape: this.iri,
 			value: value,
 			details: []
-		}
+		};
 	}
 }

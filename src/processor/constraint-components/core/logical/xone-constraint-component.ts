@@ -1,27 +1,38 @@
 import { ShaclShape } from '../../../../model/shacl-shape';
 import { ShaclValidator } from '../../../shacl-validator';
 import { ConstraintComponent } from '../../constraint-component';
-import { IShaclValidationResult } from '../../../../model/shacl-validation-report';
+import { ShaclValidationResult } from '../../../../model/shacl-validation-report';
 import { NonBlankNode, RdfNode, RdfStore } from 'rdflib-ts';
 import { XoneComponentIRI, XoneParameterIRI } from '../../../../model/constants';
 
 export class XoneConstraintComponent extends ConstraintComponent {
 	public constructor() {
-		super(XoneComponentIRI, [{ iri: XoneParameterIRI, shapeExpecting: true, listTaking: true }])
+		super(XoneComponentIRI, [
+			{ iri: XoneParameterIRI, shapeExpecting: true, listTaking: true }
+		]);
 	}
 
-	public async validateAsync(shapes: ShaclShape[], sourceShape: ShaclShape, dataGraph: RdfStore, focusNode: NonBlankNode, valueNodes: RdfNode[], constraint: Map<string, any>): Promise<IShaclValidationResult[]> {
-		let validationResults: IShaclValidationResult[] = [];
+	public async validateAsync(
+		shapes: ShaclShape[],
+		sourceShape: ShaclShape,
+		dataGraph: RdfStore,
+		focusNode: NonBlankNode,
+		valueNodes: RdfNode[],
+		constraint: Map<string, any>
+	): Promise<ShaclValidationResult[]> {
+		const validationResults: ShaclValidationResult[] = [];
 
-		let xoneShapes = constraint.get(XoneParameterIRI.value) as ShaclShape[];
-		let validator = new ShaclValidator();
+		const xoneShapes = constraint.get(XoneParameterIRI.value) as ShaclShape[];
+		const validator = new ShaclValidator();
 
-		for (let valueNode of valueNodes) {
+		for (const valueNode of valueNodes) {
 			let conformCount = 0;
-			let details: IShaclValidationResult[] = [];
+			let details: ShaclValidationResult[] = [];
 
-			for (let shape of xoneShapes) {
-				let results = await validator.validateShape(shapes, shape, dataGraph, [<NonBlankNode>valueNode]);
+			for (const shape of xoneShapes) {
+				const results = await validator.validateShape(shapes, shape, dataGraph, [
+					valueNode as NonBlankNode
+				]);
 				if (results.length === 0) {
 					conformCount++;
 				} else {
@@ -29,7 +40,11 @@ export class XoneConstraintComponent extends ConstraintComponent {
 				}
 			}
 
-			let validationResult = sourceShape.createValidationResult(focusNode, valueNode, this.iri);
+			const validationResult = sourceShape.createValidationResult(
+				focusNode,
+				valueNode,
+				this.iri
+			);
 			if (conformCount === 0) {
 				validationResult.details = validationResult.details.concat(details);
 			}
@@ -41,4 +56,4 @@ export class XoneConstraintComponent extends ConstraintComponent {
 
 		return validationResults;
 	}
-} 
+}

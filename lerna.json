@@ -1,0 +1,13 @@
+{
+	"version": "1.0.0",
+	"command": {
+		"bootstrap": {
+			"npmClientArgs": [
+				"--no-package-lock"
+			]
+		}
+	},
+	"npmClient": "yarn",
+	"useWorkspaces": false,
+	"stream": true
+}

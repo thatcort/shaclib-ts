@@ -1,33 +1,45 @@
-import { IShaclConstraint } from '../../../model/shacl-constraint';
 import { ShaclShape } from '../../../model/shacl-shape';
-import { ShaclValidator } from '../../shacl-validator'
-import { ShaclNodeShape } from '../../../model/shacl-node-shape';
+import { ShaclValidator } from '../../shacl-validator';
+
 import { ConstraintComponent } from '../constraint-component';
-import { IShaclValidationResult } from '../../../model/shacl-validation-report';
-import { SparqlComponentIRI, SparqlParameterIRI, SelectParameterIRI, AskParameterIRI } from '../../../model/constants';
-import { InvalidOperationError, Literal, NonBlankNode, RdfFactory, RdfNode, RdfStore, XsdIntegerIRI, TypedLiteral, PlainLiteral, NamespaceManagerInstance } from 'rdflib-ts';
+import { ShaclValidationResult } from '../../../model/shacl-validation-report';
+import { SparqlComponentIRI, SparqlParameterIRI } from '../../../model/constants';
+import { NonBlankNode, RdfNode, RdfStore } from 'rdflib-ts';
 
 export class SparqlConstraintComponent extends ConstraintComponent {
 	public constructor() {
-		super(SparqlComponentIRI, [{ iri: SparqlParameterIRI, shapeExpecting: true }])
+		super(SparqlComponentIRI, [{ iri: SparqlParameterIRI, shapeExpecting: true }]);
 	}
 
-	public async validateAsync(shapes: ShaclShape[], sourceShape: ShaclShape, dataGraph: RdfStore, focusNode: NonBlankNode, valueNodes: RdfNode[], constraint: Map<string, any>): Promise<IShaclValidationResult[]> {
-		let validationResults: IShaclValidationResult[] = [];
+	public async validateAsync(
+		shapes: ShaclShape[],
+		sourceShape: ShaclShape,
+		dataGraph: RdfStore,
+		focusNode: NonBlankNode,
+		valueNodes: RdfNode[],
+		constraint: Map<string, any>
+	): Promise<ShaclValidationResult[]> {
+		const validationResults: ShaclValidationResult[] = [];
 
-		let sparqlShape = constraint.get(SparqlParameterIRI.value) as ShaclShape;
-		let validator = new ShaclValidator();
+		const sparqlShape = constraint.get(SparqlParameterIRI.value) as ShaclShape;
+		const validator = new ShaclValidator();
 
-		for (let valueNode of valueNodes) {
-			let results = await validator.validateShape(shapes, sparqlShape, dataGraph, [<NonBlankNode>valueNode]);
+		for (const valueNode of valueNodes) {
+			const results = await validator.validateShape(shapes, sparqlShape, dataGraph, [
+				valueNode as NonBlankNode
+			]);
 
 			if (results.length > 0) {
-				let validationResult = sourceShape.createValidationResult(focusNode, valueNode, this.iri);
+				const validationResult = sourceShape.createValidationResult(
+					focusNode,
+					valueNode,
+					this.iri
+				);
 				validationResult.details = validationResult.details.concat(results);
 				validationResults.push(validationResult);
 			}
 		}
-		
+
 		return validationResults;
 	}
-} 
+}

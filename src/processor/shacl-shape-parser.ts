@@ -1,86 +1,106 @@
 import { ShaclShape } from '../model/shacl-shape';
 import { ShaclNodeShape } from '../model/shacl-node-shape';
 import { ShaclPropertyShape } from '../model/shacl-property-shape';
-import { BlankNode, RdfTerm } from 'rdflib-ts/lib';
 import { CommonConstraintComponentManager } from './constraint-components/constraint-component-manager';
-import { IRI, ISparqlQueryResult, ISparqlQueryResultBinding, Literal, NonBlankNode, RdfFactory, RdfStore } from 'rdflib-ts';
-import { AlternativePathIRI, InversePathIRI, NodeShapeIRI, OneOrMorePathIRI, PropertyPathIRI, PropertyShapeIRI } from '../model/constants';
-import { RdfFirstIRI, RdfRestIRI, RdfsClassIRI, RdfTypeIRI, ShapeDeactivatedIRI, ShapeMessageIRI, ShapeSeverityIRI } from '../model/constants';
-import { TargetClassIRI, TargetNodeIRI, TargetObjectsOfIRI, TargetSubjectsOfIRI, ZeroOrMorePathIRI, ZeroOrOnePathIRI } from '../model/constants';
+import { IRI, SparqlQueryResultBinding, RdfFactory, RdfStore, SparqlQueryResult } from 'rdflib-ts';
+import {
+	AlternativePathIRI,
+	InversePathIRI,
+	NodeShapeIRI,
+	OneOrMorePathIRI,
+	PropertyPathIRI,
+	PropertyShapeIRI
+} from '../model/constants';
+import {
+	RdfFirstIRI,
+	RdfRestIRI,
+	RdfsClassIRI,
+	RdfTypeIRI,
+	ShapeDeactivatedIRI,
+	ShapeMessageIRI,
+	ShapeSeverityIRI
+} from '../model/constants';
+import {
+	TargetClassIRI,
+	TargetNodeIRI,
+	TargetObjectsOfIRI,
+	TargetSubjectsOfIRI,
+	ZeroOrMorePathIRI,
+	ZeroOrOnePathIRI
+} from '../model/constants';
 
-
-export interface IShapeParsingOptions {
-
+export interface ShapeQueryResult {
+	shape: SparqlQueryResultBinding;
+	path?: SparqlQueryResultBinding;
+	deactivated?: SparqlQueryResultBinding;
+	severity?: SparqlQueryResultBinding;
+	message?: SparqlQueryResultBinding;
 }
 
-export interface IShapeQueryResult {
-    shape: ISparqlQueryResultBinding,
-    path?: ISparqlQueryResultBinding,
-    deactivated?: ISparqlQueryResultBinding,
-    severity?: ISparqlQueryResultBinding,
-    message?: ISparqlQueryResultBinding
+export interface TargetQueryResult {
+	targetNode: SparqlQueryResultBinding;
+	targetClass?: SparqlQueryResultBinding;
+	implicitTargetClass?: SparqlQueryResultBinding;
+	targetSubjectsOf?: SparqlQueryResultBinding;
+	targetObjectsOf?: SparqlQueryResultBinding;
 }
 
-export interface ITargetQueryResult {
-    targetNode: ISparqlQueryResultBinding,
-    targetClass?: ISparqlQueryResultBinding,
-    implicitTargetClass?: ISparqlQueryResultBinding,
-    targetSubjectsOf?: ISparqlQueryResultBinding,
-    targetObjectsOf?: ISparqlQueryResultBinding
+export interface ConstraintQueryResult {
+	constraint: SparqlQueryResultBinding;
+	constraintValue?: SparqlQueryResultBinding;
 }
 
-export interface IConstraintQueryResult {
-    constraint: ISparqlQueryResultBinding,
-    constraintValue?: ISparqlQueryResultBinding
+export interface ListQueryResult {
+	item: SparqlQueryResultBinding;
 }
 
-export interface IListQueryResult {
-    item: ISparqlQueryResultBinding
-}
-
-export interface IPathQueryResult {
-    pathType: ISparqlQueryResultBinding,
-    pathValue: ISparqlQueryResultBinding
+export interface PathQueryResult {
+	pathType: SparqlQueryResultBinding;
+	pathValue: SparqlQueryResultBinding;
 }
 
 export class ShaclShapeParser {
-    public readonly options: IShapeParsingOptions;
+	public readonly options: any;
 
-    public constructor(options: IShapeParsingOptions = {}) {
-        this.options = Object.assign({}, {}, options);
-    }
+	public constructor(options = {}) {
+		this.options = Object.assign({}, {}, options);
+	}
 
-    public async parseShapesAsync(shapeGraph: RdfStore): Promise<ShaclShape[]> {
-        let shapes = [];
+	public async parseShapesAsync(shapeGraph: RdfStore): Promise<ShaclShape[]> {
+		const shapes = [];
 
-        // Extract all shapes from dataset, and put them in map for 
-        // easier manipulation later on
-        let shapesQuery = this.buildShapesQuery();
-        let shapesQueryResult = await shapeGraph.queryAsync<IShapeQueryResult>(shapesQuery);
-        let shapeMap = this.createShapeMap(shapesQueryResult);
+		// Extract all shapes from dataset, and put them in map for
+		// easier manipulation later on
+		const shapesQuery = this.buildShapesQuery();
+		const shapesQueryResult = await shapeGraph.queryAsync<ShapeQueryResult>(shapesQuery);
+		const shapeMap = this.createShapeMap(shapesQueryResult);
 
-        // For each shape, parse it's properties like targets, constraints and path
-        for (let shape of shapeMap.values()) {
-            await this.parseShapeTargetsAsync(shape, shapeGraph);
-            await this.parseShapeConstraintsAsync(shape, shapeMap, shapeGraph);
+		// For each shape, parse it's properties like targets, constraints and path
+		for (const shape of shapeMap.values()) {
+			await this.parseShapeTargetsAsync(shape, shapeGraph);
+			await this.parseShapeConstraintsAsync(shape, shapeMap, shapeGraph);
 
-            if (shape instanceof ShaclPropertyShape) {
-                await this.parseShapePathAsync(shape, shapeGraph);
-            }
+			if (shape instanceof ShaclPropertyShape) {
+				await this.parseShapePathAsync(shape, shapeGraph);
+			}
 
-            shapes.push(shape);
-        }
+			shapes.push(shape);
+		}
 
-        return shapes;
-    }
+		return shapes;
+	}
 
-    private buildShapesQuery(): string {
-        let constraints = CommonConstraintComponentManager.getAllConstraintParameters();
-        let shapeExpectingListTakingParameters = constraints.filter(p => p.shapeExpecting && p.listTaking);
-        let shapeExpectingNonListTakingParameters = constraints.filter(p => p.shapeExpecting && !p.listTaking);
+	private buildShapesQuery(): string {
+		const constraints = CommonConstraintComponentManager.getAllConstraintParameters();
+		const shapeExpectingListTakingParameters = constraints.filter(
+			p => p.shapeExpecting && p.listTaking
+		);
+		const shapeExpectingNonListTakingParameters = constraints.filter(
+			p => p.shapeExpecting && !p.listTaking
+		);
 
-        // Build sparql query that will extract all shapes from dataset
-        return `
+		// Build sparql query that will extract all shapes from dataset
+		return `
             SELECT DISTINCT ?shape ?path ?deactivated ?severity ?message
             WHERE
             {
@@ -102,14 +122,18 @@ export class ShaclShapeParser {
                 UNION 
                 {
                     ?subject ?predicate ?shape .
-                    filter(?predicate = ${shapeExpectingNonListTakingParameters.map(p => p.iri).join(' || ?predicate = ')})
+                    filter(?predicate = ${shapeExpectingNonListTakingParameters
+						.map(p => p.iri)
+						.join(' || ?predicate = ')})
                 }
 
                 UNION 
                 {
                     ?subject ?predicate ?list .
 					?list ${RdfRestIRI}*/${RdfFirstIRI} ?shape .
-                    filter(?predicate = ${shapeExpectingListTakingParameters.map(p => p.iri).join(' || ?predicate = ')})
+                    filter(?predicate = ${shapeExpectingListTakingParameters
+						.map(p => p.iri)
+						.join(' || ?predicate = ')})
                 }
 
                 OPTIONAL
@@ -139,37 +163,47 @@ export class ShaclShapeParser {
                 }
             }
         `;
-    }
+	}
 
-    private createShapeMap(shapesQueryResult: ISparqlQueryResult<IShapeQueryResult>): Map<string, ShaclShape> {
-        let shapeMap = new Map<string, ShaclShape>();
+	private createShapeMap(
+		shapesQueryResult: SparqlQueryResult<ShapeQueryResult>
+	): Map<string, ShaclShape> {
+		const shapeMap = new Map<string, ShaclShape>();
 
-        for (let result of shapesQueryResult.results.bindings) {
-            let shape = shapeMap.get(result.shape.value);
+		for (const result of shapesQueryResult.results.bindings) {
+			let shape = shapeMap.get(result.shape.value);
 
-            if (!shape) {
-                shape = result.path ? new ShaclPropertyShape(new IRI(result.shape.value)) : new ShaclNodeShape(new IRI(result.shape.value));
-                shapeMap.set(result.shape.value, shape);
-            }
+			if (!shape) {
+				shape = result.path
+					? new ShaclPropertyShape(new IRI(result.shape.value))
+					: new ShaclNodeShape(new IRI(result.shape.value));
+				shapeMap.set(result.shape.value, shape);
+			}
 
-            if (result.deactivated) {
-                shape.deactivated = result.deactivated.value === 'true';
-            }
+			if (result.deactivated) {
+				shape.deactivated = result.deactivated.value === 'true';
+			}
 
-            if (result.severity) {
-                shape.severity = new IRI(result.severity.value);
-            }
+			if (result.severity) {
+				shape.severity = new IRI(result.severity.value);
+			}
 
-            if (result.message) {
-                shape.messages.push(RdfFactory.createLiteral(result.message.value, result.message['xml:lang'], result.message.datatype));
-            }
-        }
+			if (result.message) {
+				shape.messages.push(
+					RdfFactory.createLiteral(
+						result.message.value,
+						result.message['xml:lang'],
+						result.message.datatype
+					)
+				);
+			}
+		}
 
-        return shapeMap;
-    }
+		return shapeMap;
+	}
 
-    private buildTargetsQuery(shapeIRI: IRI): string {
-        return `
+	private buildTargetsQuery(shapeIRI: IRI): string {
+		return `
             SELECT DISTINCT ?targetNode ?targetClass ?implicitTargetClass ?targetSubjectsOf ?targetObjectsOf
             WHERE
             {
@@ -200,43 +234,49 @@ export class ShaclShapeParser {
                 }
             }
         `;
-    }
+	}
 
-    private async parseShapeTargetsAsync(shape: ShaclShape, shapeGraph: RdfStore): Promise<any> {
-        // Parse and populate shape with it's targets
-        let targetsQuery = this.buildTargetsQuery(shape.iri);
-        let targetsQueryResult = await shapeGraph.queryAsync<ITargetQueryResult>(targetsQuery);
+	private async parseShapeTargetsAsync(shape: ShaclShape, shapeGraph: RdfStore): Promise<any> {
+		// Parse and populate shape with it's targets
+		const targetsQuery = this.buildTargetsQuery(shape.iri);
+		const targetsQueryResult = await shapeGraph.queryAsync<TargetQueryResult>(targetsQuery);
 
-        for (let result of targetsQueryResult.results.bindings) {
-            if (result.targetNode) {
-                let targetNode = result.targetNode.type === 'uri' ? new IRI(result.targetNode)
-                    : RdfFactory.createLiteral(result.targetNode.value, result.targetNode['xml:lang'], result.targetNode.datatype);
+		for (const result of targetsQueryResult.results.bindings) {
+			if (result.targetNode) {
+				const targetNode =
+					result.targetNode.type === 'uri'
+						? new IRI(result.targetNode)
+						: RdfFactory.createLiteral(
+								result.targetNode.value,
+								result.targetNode['xml:lang'],
+								result.targetNode.datatype
+						  );
 
-                shape.targetNodes.push(targetNode);
-            }
+				shape.targetNodes.push(targetNode);
+			}
 
-            if (result.targetClass) {
-                shape.targetClasses.push(new IRI(result.targetClass.value));
-            }
+			if (result.targetClass) {
+				shape.targetClasses.push(new IRI(result.targetClass.value));
+			}
 
-            if (result.implicitTargetClass) {
-                shape.targetClasses.push(new IRI(result.implicitTargetClass.value));
-            }
+			if (result.implicitTargetClass) {
+				shape.targetClasses.push(new IRI(result.implicitTargetClass.value));
+			}
 
-            if (result.targetSubjectsOf) {
-                shape.targetSubjectsOf.push(new IRI(result.targetSubjectsOf.value));
-            }
+			if (result.targetSubjectsOf) {
+				shape.targetSubjectsOf.push(new IRI(result.targetSubjectsOf.value));
+			}
 
-            if (result.targetObjectsOf) {
-                shape.targetObjectsOf.push(new IRI(result.targetObjectsOf.value));
-            }
-        }
-    }
+			if (result.targetObjectsOf) {
+				shape.targetObjectsOf.push(new IRI(result.targetObjectsOf.value));
+			}
+		}
+	}
 
-    private buildConstraintsQuery(shapeIRI: IRI): string {
-        let constraints = CommonConstraintComponentManager.getAllConstraintParameters();
+	private buildConstraintsQuery(shapeIRI: IRI): string {
+		const constraints = CommonConstraintComponentManager.getAllConstraintParameters();
 
-        return `
+		return `
             SELECT DISTINCT ?constraint ?constraintValue
             WHERE
             {
@@ -244,77 +284,93 @@ export class ShaclShapeParser {
                 filter(?constraint = ${constraints.map(c => c.iri).join('|| ?constraint = ')})
             }
         `;
-    }
+	}
 
-    private buildListQuery(listIRI: IRI): string {
-        return `
+	private buildListQuery(listIRI: IRI): string {
+		return `
             SELECT ?item 
             WHERE
             {
                 ${listIRI} ${RdfRestIRI}*/${RdfFirstIRI} ?item .
             }
         `;
-    }
+	}
 
-    private async parseShapeConstraintsAsync(shape: ShaclShape, shapeMap: Map<string, ShaclShape>, shapeGraph: RdfStore): Promise<any> {
-        // Parse  constraints declared by shape
-        let constraintsQuery = this.buildConstraintsQuery(shape.iri);
-        let constraintsQueryResult = await shapeGraph.queryAsync<IConstraintQueryResult>(constraintsQuery);
+	private async parseShapeConstraintsAsync(
+		shape: ShaclShape,
+		shapeMap: Map<string, ShaclShape>,
+		shapeGraph: RdfStore
+	): Promise<any> {
+		// Parse  constraints declared by shape
+		const constraintsQuery = this.buildConstraintsQuery(shape.iri);
+		const constraintsQueryResult = await shapeGraph.queryAsync<ConstraintQueryResult>(
+			constraintsQuery
+		);
 
-        for (let result of constraintsQueryResult.results.bindings) {
-            let constraintIRI = new IRI(result.constraint.value);
-            let constraintParameter = CommonConstraintComponentManager.getConstraintParameterByIRI(constraintIRI);
+		for (const result of constraintsQueryResult.results.bindings) {
+			const constraintIRI = new IRI(result.constraint.value);
+			const constraintParameter = CommonConstraintComponentManager.getConstraintParameterByIRI(
+				constraintIRI
+			);
 
-            let constraintValue: any;
+			let constraintValue: any;
 
-            if (constraintParameter.listTaking) {
-                constraintValue = [];
+			if (constraintParameter.listTaking) {
+				constraintValue = [];
 
-                let listQuery = this.buildListQuery(new IRI(result.constraintValue.value));
-                let listQueryResults = await shapeGraph.queryAsync<IListQueryResult>(listQuery);
+				const listQuery = this.buildListQuery(new IRI(result.constraintValue.value));
+				const listQueryResults = await shapeGraph.queryAsync<ListQueryResult>(listQuery);
 
-                for (let element of listQueryResults.results.bindings) {
-                    if (constraintParameter.shapeExpecting) {
-                        let childShape = shapeMap.get(element.item.value);
-                        childShape.isChildShape = true;
+				for (const element of listQueryResults.results.bindings) {
+					if (constraintParameter.shapeExpecting) {
+						const childShape = shapeMap.get(element.item.value);
+						childShape.isChildShape = true;
 
-                        this.resolveChildShapeTargets(shape, childShape);
-                        constraintValue.push(childShape);
-                    } else {
-                        constraintValue.push(RdfFactory.createRdfTermFromSparqlResultBinding(element.item));
-                    }
-                }
-            } else {
-                if (constraintParameter.shapeExpecting) {
-                    let childShape = shapeMap.get(result.constraintValue.value);
-                    childShape.isChildShape = true;
+						this.resolveChildShapeTargets(shape, childShape);
+						constraintValue.push(childShape);
+					} else {
+						constraintValue.push(
+							RdfFactory.createRdfTermFromSparqlResultBinding(element.item)
+						);
+					}
+				}
+			} else {
+				if (constraintParameter.shapeExpecting) {
+					const childShape = shapeMap.get(result.constraintValue.value);
+					childShape.isChildShape = true;
 
-                    this.resolveChildShapeTargets(shape, childShape);
-                    constraintValue = childShape;
-                } else {
-                    constraintValue = RdfFactory.createRdfTermFromSparqlResultBinding(result.constraintValue);
-                }
-            }
+					this.resolveChildShapeTargets(shape, childShape);
+					constraintValue = childShape;
+				} else {
+					constraintValue = RdfFactory.createRdfTermFromSparqlResultBinding(
+						result.constraintValue
+					);
+				}
+			}
 
-            shape.constraints.push({
-                iri: constraintIRI,
-                value: constraintValue
-            });
-        }
-    }
+			shape.constraints.push({
+				iri: constraintIRI,
+				value: constraintValue
+			});
+		}
+	}
 
-    private resolveChildShapeTargets(shape: ShaclShape, childShape: ShaclShape): void {
-        if (childShape.targetClasses.length === 0 && childShape.targetNodes.length === 0 &&
-            childShape.targetObjectsOf.length === 0 && childShape.targetSubjectsOf.length === 0) {
-            childShape.targetClasses = shape.targetClasses;
-            childShape.targetNodes = shape.targetNodes;
-            childShape.targetObjectsOf = shape.targetObjectsOf;
-            childShape.targetSubjectsOf = shape.targetSubjectsOf;
-        }
-    }
+	private resolveChildShapeTargets(shape: ShaclShape, childShape: ShaclShape): void {
+		if (
+			childShape.targetClasses.length === 0 &&
+			childShape.targetNodes.length === 0 &&
+			childShape.targetObjectsOf.length === 0 &&
+			childShape.targetSubjectsOf.length === 0
+		) {
+			childShape.targetClasses = shape.targetClasses;
+			childShape.targetNodes = shape.targetNodes;
+			childShape.targetObjectsOf = shape.targetObjectsOf;
+			childShape.targetSubjectsOf = shape.targetSubjectsOf;
+		}
+	}
 
-    private buildPathQuery(shapeIRI: IRI): string {
-        return `
+	private buildPathQuery(shapeIRI: IRI): string {
+		return `
             SELECT DISTINCT ?pathType ?pathValue 
             WHERE
             {
@@ -363,10 +419,10 @@ export class ShaclShapeParser {
                 }
             }
         `;
-    }
+	}
 
-    private buildSequencePathQuery(sequencePathIRI: IRI): string {
-        return `
+	private buildSequencePathQuery(sequencePathIRI: IRI): string {
+		return `
             SELECT ?pathType ?pathValue
             WHERE
             {
@@ -415,44 +471,53 @@ export class ShaclShapeParser {
                 }
             }
         `;
-    }
+	}
 
-    private async parseShapePathAsync(shape: ShaclPropertyShape, shapeGraph: RdfStore): Promise<any> {
-        let pathQuery = this.buildPathQuery(shape.iri);
-        let pathQueryResult = await shapeGraph.queryAsync<IPathQueryResult>(pathQuery);
+	private async parseShapePathAsync(
+		shape: ShaclPropertyShape,
+		shapeGraph: RdfStore
+	): Promise<any> {
+		const pathQuery = this.buildPathQuery(shape.iri);
+		const pathQueryResult = await shapeGraph.queryAsync<PathQueryResult>(pathQuery);
 
-        let pathType = pathQueryResult.results.bindings[0].pathType.value;
-        let pathValue = pathQueryResult.results.bindings[0].pathValue.value;
+		const pathType = pathQueryResult.results.bindings[0].pathType.value;
+		const pathValue = pathQueryResult.results.bindings[0].pathValue.value;
 
-        shape.path.pathValue = new IRI(pathValue);
-        shape.path.pathType = pathType;
+		shape.path.pathValue = new IRI(pathValue);
+		shape.path.pathType = pathType;
 
-        if (pathType === 'Sequence' || pathType === 'Alternative') {
+		if (pathType === 'Sequence' || pathType === 'Alternative') {
+			const sequencePathQuery = this.buildSequencePathQuery(new IRI(pathValue));
+			const sequencePathQueryResult = await shapeGraph.queryAsync<PathQueryResult>(
+				sequencePathQuery
+			);
 
-            let sequencePathQuery = this.buildSequencePathQuery(new IRI(pathValue));
-            let sequencePathQueryResult = await shapeGraph.queryAsync<IPathQueryResult>(sequencePathQuery);
+			const stringBuilder = [];
 
-            let stringBuilder = [];
+			for (let i = 0; i < sequencePathQueryResult.results.bindings.length; i++) {
+				stringBuilder.push(this.resolveSparqlPathString(shape, pathType));
+			}
 
-            for (let result of sequencePathQueryResult.results.bindings) {
-                stringBuilder.push(this.resolveSparqlPathString(shape, pathType));
-            }
+			shape.path.sparqlPathString = stringBuilder.join(pathType === 'Sequence' ? '/' : '|');
+		} else {
+			shape.path.sparqlPathString = this.resolveSparqlPathString(shape, pathType);
+		}
+	}
 
-            shape.path.sparqlPathString = stringBuilder.join(pathType === 'Sequence' ? '/' : '|');
-
-        } else {
-            shape.path.sparqlPathString = this.resolveSparqlPathString(shape, pathType);
-        }
-    }
-
-    private resolveSparqlPathString(shape: ShaclPropertyShape, pathType: string): string {
-        switch (pathType) {
-            case 'Predicate': return `${shape.path.pathValue}`;
-            case 'Inverse': return `^${shape.path.pathValue}`;
-            case 'ZeroOrMore': return `${shape.path.pathValue}*`;
-            case 'OneOrMore': return `${shape.path.pathValue}+`;
-            case 'ZeroOrOne': return `${shape.path.pathValue}?`;
-            default: return null;
-        }
-    }
+	private resolveSparqlPathString(shape: ShaclPropertyShape, pathType: string): string {
+		switch (pathType) {
+			case 'Predicate':
+				return `${shape.path.pathValue}`;
+			case 'Inverse':
+				return `^${shape.path.pathValue}`;
+			case 'ZeroOrMore':
+				return `${shape.path.pathValue}*`;
+			case 'OneOrMore':
+				return `${shape.path.pathValue}+`;
+			case 'ZeroOrOne':
+				return `${shape.path.pathValue}?`;
+			default:
+				return null;
+		}
+	}
 }

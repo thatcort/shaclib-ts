@@ -11,17 +11,22 @@ export class DBMSAdapterManager {
 	}
 
 	public createAdapter(dbmsName: string, dbmsVersion: string, dbmsUrl?: string): RdfDBMSAdapter {
-		let adapter = this.adapters.get(dbmsName + dbmsVersion);
+		const adapter = this.adapters.get(dbmsName + dbmsVersion);
 
 		if (!adapter) {
-			throw new NotSupportedError(`Adapter for '${dbmsName} - v${dbmsVersion}' is not supported`);
+			throw new NotSupportedError(
+				`Adapter for '${dbmsName} - v${dbmsVersion}' is not supported`
+			);
 		}
 
 		return Reflect.construct(adapter, dbmsUrl ? [dbmsUrl] : []);
 	}
 
-
-	public registerAdapter(dbmsName: string, dbmsVersion: string, adapterConstructor: Function): void {
+	public registerAdapter(
+		dbmsName: string,
+		dbmsVersion: string,
+		adapterConstructor: Function
+	): void {
 		this.adapters.set(dbmsName + dbmsVersion, adapterConstructor);
 	}
 

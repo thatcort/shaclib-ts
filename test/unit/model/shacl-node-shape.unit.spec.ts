@@ -1,8 +1,3 @@
-import 'mocha';
-import * as chai from 'chai';
-
-let should = chai.should();
-
 import { IRI } from 'rdflib-ts';
 import { ShaclNodeShape } from '../../../src/model/shacl-node-shape';
 import { ViolationSeverityIRI } from '../../../src/model/constants';
@@ -10,7 +5,7 @@ import { ViolationSeverityIRI } from '../../../src/model/constants';
 describe('ShaclNodeShape - Unit', () => {
 	context('constructor', () => {
 		it('should set iri property and default other properties', () => {
-			let nodeShape = new ShaclNodeShape(new IRI('http://example.org#someNodeShape'));
+			const nodeShape = new ShaclNodeShape(new IRI('http://example.org#someNodeShape'));
 
 			nodeShape.iri.value.should.equal('http://example.org#someNodeShape');
 			nodeShape.isChildShape.should.be.false;
