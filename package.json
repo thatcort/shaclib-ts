@@ -13,6 +13,9 @@
 	},
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",
+	"bin": {
+		"shacl-cli": "dist/cli/shacl-cli.js"
+	},
 	"scripts": {
 		"clean": "del dist",
 		"dev": "tsc -w --preserveWatchOutput",
